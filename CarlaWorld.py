@@ -6,6 +6,7 @@ CARLA_EGG_PATH = os.path.join(CARLA_DIR, 'PythonAPI', 'carla', 'dist', 'carla-0.
 sys.path.append(CARLA_EGG_PATH)
 import carla
 import random
+import time
 import numpy as np
 import cv2
 import sensor as sensorbgra
@@ -83,7 +84,7 @@ class CarlaWorld:
         spawn_point = carla.Transform(carla.Location(x=0.8, z=1.7))
         sensor = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
         self.actor_list.append(sensor)
-        sensor.listen(lambda img: img.save_to_disk(os.path.join('data', 'rgb', 'rgb{:010d}.jpeg'.format(img.frame))))
+        sensor.listen(lambda img: img.save_to_disk(os.path.join('data', 'rgb', 'rgb{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S")))))
         # sensor.listen(lambda img: process_rgb_img(img))
 
     def put_depth_sensor(self, vehicle, sensor_width=640, sensor_height=480):
@@ -98,34 +99,19 @@ class CarlaWorld:
         spawn_point = carla.Transform(carla.Location(x=0.8, z=1.5))
         sensor = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
         self.actor_list.append(sensor)
-        # sensor.listen(lambda img: img.save_to_disk(os.path.join('data', 'depth', 'depth{:010d}.jpeg'.format(img.frame)), cc))
+        # sensor.listen(lambda img: img.save_to_disk(os.path.join('data', 'depth', 'depth{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S")))), cc))
         sensor.listen(lambda data: self.save_depth_data(data))
 
     def save_depth_data(self, data):
         img = np.array(data.raw_data)
-        np.save(os.path.join('data', 'depth', 'depth{:010d}'.format(data.frame)), img)
+        np.save(os.path.join('data', 'depth', 'depth{0}'.format(time.strftime("%Y%m%d-%H%M%S"))), img)
         """
         normalized = (R + G * 256 + B * 256 * 256) / (256 * 256 * 256 - 1)
         in_meters = 1000 * normalized
         """
 
     def put_semantic_sensor(self, vehicle, sensor_width=640, sensor_height=480):
-        """https://carla.readthedocs.io/en/latest/cameras_and_sensors/
-        Value	Tag	Converted color
-        0	Unlabeled	( 0, 0, 0)
-        1	Building	( 70, 70, 70)
-        2	Fence	(190, 153, 153)
-        3	Other	(250, 170, 160)
-        4	Pedestrian	(220, 20, 60)
-        5	Pole	(153, 153, 153)
-        6	Road line	(157, 234, 50)
-        7	Road	(128, 64, 128)
-        8	Sidewalk	(244, 35, 232)
-        9	Vegetation	(107, 142, 35)
-        10	Car	( 0, 0, 142)
-        11	Wall	(102, 102, 156)
-        12	Traffic sign	(220, 220, 0)
-        """
+        # https://carla.readthedocs.io/en/latest/cameras_and_sensors/
         bp = self.blueprint_library.find('sensor.camera.semantic_segmentation')
         bp.set_attribute('image_size_x', f'{sensor_width}')
         bp.set_attribute('image_size_y', f'{sensor_height}')
@@ -137,6 +123,10 @@ class CarlaWorld:
         sensor = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
         self.actor_list.append(sensor)
         sensor.listen(lambda data: data.save_to_disk(os.path.join('data', 'semantic', 'sem{:010d}.jpeg'.format(data.frame)), cc))
+
+    def put_bb_sensor(self, vehicle, sensor_width=640, sensor_height=480):
+        # TODO COntinue working here >:)
+        pass
 
 
 def process_rgb_img(img):

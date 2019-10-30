@@ -49,13 +49,13 @@ if __name__ == "__main__":
     sensor_width = 1024
     sensor_height = 768
     vehicle = CarlaWorld.spawn_vehicle()
-    print('Sleeping so that vehicle doesn\'t begins bouncing on the air.')
+    print('Sleeping so that vehicle doesn\'t begins recording data while floating on the air.')
     timer(5)
     CarlaWorld.put_rgb_sensor(vehicle, sensor_width, sensor_height)
     CarlaWorld.put_depth_sensor(vehicle, sensor_width, sensor_height)
+    CarlaWorld.put_bb_sensor(vehicle, sensor_width, sensor_height)
     # CarlaWorld.put_semantic_sensor(vehicle, sensor_width, sensor_height)
+    print('Sleeping so that data will be captured for some time!')
     timer(10)
     CarlaWorld.clean_actor_list()
 
-# FAZER AGORA: SALVAR DEPTH COMO INFORMAÇÃO DE NUMPY E IMAGEM AO MESMO TEMPO (TEMPORARAIAMENTE, SÓ PRA VER COMO VAI MSM)
-# TIRAR A AQUISIÇÃO DE SEGMENTAÇÃO SEMANTICA E COLOCAR O DE BB
