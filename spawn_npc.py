@@ -149,6 +149,7 @@ class NPCClass:
         self.all_actors = world.get_actors(self.all_id)
 
         # wait for a tick to ensure client receives the last transform of the walkers we have just created
+        world.tick()
         world.wait_for_tick()
 
         # 5. initialize each controller and set target to walk to (list is [controler, actor, controller, actor ...])

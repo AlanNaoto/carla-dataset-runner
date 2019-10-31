@@ -9,8 +9,8 @@ import random
 import time
 import numpy as np
 import cv2
-import sensor as sensorbgra
 from spawn_npc import NPCClass
+from client_bounding_boxes import ClientSideBoundingBoxes
 
 
 class CarlaWorld:
@@ -18,10 +18,15 @@ class CarlaWorld:
         client = carla.Client('localhost', 2000)
         client.set_timeout(2.0)
         self.world = client.get_world()
-        self.blueprint_library = self.world.get_blueprint_library()
         print('Successfully connected to CARLA')
-        self.actor_list = []
+        # Setting synchronous mode and fixed time-step so that all sensors data captured happen at the same time
+        settings = self.world.get_settings()
+        settings.synchronous_mode = True
+        settings.fixed_delta_seconds = 0.05  # Time-step with 20 FPS
+        # self.world.apply_settings(settings)
+        self.blueprint_library = self.world.get_blueprint_library()
         self.global_sensor_tick = global_sensor_tick
+        self.actor_list = []
 
     def set_weather(self):
         # Changing weather https://carla.readthedocs.io/en/stable/carla_settings/
@@ -44,13 +49,10 @@ class CarlaWorld:
         print('Destroying actors...')
         for actor in self.actor_list:
             actor.destroy()
-        for walker in self.npc_walker_list:
-            walker.destroy()
-        print('Done destroying actors.')
         self.NPC.remove_npcs()
+        print('Done destroying actors.')
 
     def spawn_npcs(self, number_of_vehicles, number_of_walkers):
-        self.npc_walker_list = []
         self.NPC = NPCClass()
         self.NPC.create_npcs(number_of_vehicles, number_of_walkers)
 
@@ -82,10 +84,18 @@ class CarlaWorld:
         bp.set_attribute('sensor_tick', str(self.global_sensor_tick))
         # Adjust sensor relative position to the vehicle
         spawn_point = carla.Transform(carla.Location(x=0.8, z=1.7))
-        sensor = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
-        self.actor_list.append(sensor)
-        sensor.listen(lambda img: img.save_to_disk(os.path.join('data', 'rgb', 'rgb{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S")))))
-        # sensor.listen(lambda img: process_rgb_img(img))
+        self.rgb_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
+        # Camera calibration
+        fov = 110
+        calibration = np.identity(3)
+        calibration[0, 2] = sensor_width / 2.0
+        calibration[1, 2] = sensor_height / 2.0
+        calibration[0, 0] = calibration[1, 1] = sensor_width / (2.0 * np.tan(fov * np.pi / 360.0))
+        self.rgb_camera.calibration = calibration
+        self.actor_list.append(self.rgb_camera)
+        # Capture data
+        # self.rgb_camera.listen(lambda img: img.save_to_disk(os.path.join('data', 'rgb', 'rgb{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S")))))
+        self.rgb_camera.listen(lambda img: self.process_rgb_img(img, sensor_width, sensor_height))
 
     def put_depth_sensor(self, vehicle, sensor_width=640, sensor_height=480):
         # https://carla.readthedocs.io/en/latest/cameras_and_sensors/
@@ -97,10 +107,10 @@ class CarlaWorld:
         cc = carla.ColorConverter.Depth
         # Adjust sensor relative position to the vehicle
         spawn_point = carla.Transform(carla.Location(x=0.8, z=1.5))
-        sensor = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
-        self.actor_list.append(sensor)
-        # sensor.listen(lambda img: img.save_to_disk(os.path.join('data', 'depth', 'depth{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S")))), cc))
-        sensor.listen(lambda data: self.save_depth_data(data))
+        self.depth_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
+        self.actor_list.append(self.depth_camera)
+        # self.depth_camera.listen(lambda img: img.save_to_disk(os.path.join('data', 'depth', 'depth{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S")))), cc))
+        self.depth_camera.listen(lambda data: self.save_depth_data(data))
 
     def save_depth_data(self, data):
         img = np.array(data.raw_data)
@@ -120,26 +130,21 @@ class CarlaWorld:
         cc = carla.ColorConverter.CityScapesPalette
         # Adjust sensor relative position to the vehicle
         spawn_point = carla.Transform(carla.Location(x=0.8, z=1.7))
-        sensor = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
-        self.actor_list.append(sensor)
-        sensor.listen(lambda data: data.save_to_disk(os.path.join('data', 'semantic', 'sem{:010d}.jpeg'.format(data.frame)), cc))
+        self.semantic_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
+        self.actor_list.append(self.semantic_camera)
+        self.semantic_camera.listen(lambda data: data.save_to_disk(os.path.join('data', 'semantic', 'sem{:010d}.jpeg'.format(data.frame)), cc))
 
-    def put_bb_sensor(self, vehicle, sensor_width=640, sensor_height=480):
-        # TODO COntinue working here >:)
-        pass
+    def put_bb_sensor(self):
+        vehicles_on_screen = self.world.get_actors().filter('vehicle.*')
+        walkers_on_screen = self.world.get_actors().filter('walker.*')
+        bounding_boxes_vehicles = ClientSideBoundingBoxes.get_bounding_boxes(vehicles_on_screen, self.rgb_camera)
+        bounding_boxes_walkers = ClientSideBoundingBoxes.get_bounding_boxes(walkers_on_screen, self.rgb_camera)
+        print('bounding_boxes_vehicles', bounding_boxes_vehicles)
+        print('bounding_boxes_walkers', bounding_boxes_walkers)
 
-
-def process_rgb_img(img):
-    """
-    :param img:
-    :return: show converted img from raw data to img window
-    used for debugging/analyzing the frames on the go
-    """
-    width = 640
-    height = 480
-    img = np.array(img.raw_data)
-    img = img.reshape((height, width, 4))
-    img = img[:, :, :3]
-    cv2.imshow("", img)
-    cv2.waitKey(1)
-    return img / 255.0
+    def process_rgb_img(self, img, sensor_width, sensor_height):
+        img = np.array(img.raw_data)
+        img = img.reshape((sensor_height, sensor_width, 4))
+        img = img[:, :, :3]
+        cv2.imwrite(os.path.join('data', 'rgb', 'rgb{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S"))), img)
+        self.put_bb_sensor()

@@ -2,10 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a41a94bc-a677-4b27-9044-cbb0c43d576e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CarlaWorld.py" beforeDir="false" afterPath="$PROJECT_DIR$/CarlaWorld.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client_bounding_boxes.py" beforeDir="false" afterPath="$PROJECT_DIR$/client_bounding_boxes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/check_depth_data.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/depth_data" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/depth_data.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/depth_default.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/depth_minmax_colormap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/depth_minmaxnorm.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/depth_rgb.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/depth_sample.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/normalized_depth.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sensor.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spawn_npc.py" beforeDir="false" afterPath="$PROJECT_DIR$/spawn_npc.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -152,8 +163,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.spawn_npc" />
         <item itemvalue="Python.client_bounding_boxes" />
+        <item itemvalue="Python.spawn_npc" />
         <item itemvalue="Python.CarlaWorld" />
         <item itemvalue="Python.sensor" />
       </list>
@@ -170,6 +181,14 @@
       <option name="presentableId" value="Default" />
       <updated>1571044743076</updated>
     </task>
+    <task id="LOCAL-00001" summary="Fixed file namesaving format for computer local timestamp.&#10;FIxed depth information file save type to numpy array.">
+      <created>1572450796538</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1572450796538</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -177,10 +196,16 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fixed file namesaving format for computer local timestamp.&#10;FIxed depth information file save type to numpy array." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed file namesaving format for computer local timestamp.&#10;FIxed depth information file save type to numpy array." />
   </component>
 </project>
