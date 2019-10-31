@@ -1,23 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a41a94bc-a677-4b27-9044-cbb0c43d576e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CarlaWorld.py" beforeDir="false" afterPath="$PROJECT_DIR$/CarlaWorld.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client_bounding_boxes.py" beforeDir="false" afterPath="$PROJECT_DIR$/client_bounding_boxes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/check_depth_data.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth_data" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth_data.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth_default.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth_minmax_colormap.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth_minmaxnorm.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth_rgb.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth_sample.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/normalized_depth.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sensor.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spawn_npc.py" beforeDir="false" afterPath="$PROJECT_DIR$/spawn_npc.py" afterDir="false" />
-    </list>
+    <list default="true" id="a41a94bc-a677-4b27-9044-cbb0c43d576e" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,7 +172,21 @@
       <option name="project" value="LOCAL" />
       <updated>1572450796538</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Implemented scratch of bounding box ground truth generation via RGB &#10;cameras. Set simulation mode to synchronous">
+      <created>1572517368967</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1572517368967</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Implemented scratch of bounding box ground truth generation via RGB &#10;cameras. Set simulation mode to synchronous">
+      <created>1572517467303</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1572517467303</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -206,6 +204,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Fixed file namesaving format for computer local timestamp.&#10;FIxed depth information file save type to numpy array." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed file namesaving format for computer local timestamp.&#10;FIxed depth information file save type to numpy array." />
+    <MESSAGE value="Implemented scratch of bounding box ground truth generation via RGB &#10;cameras. Set simulation mode to synchronous" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented scratch of bounding box ground truth generation via RGB &#10;cameras. Set simulation mode to synchronous" />
   </component>
 </project>
