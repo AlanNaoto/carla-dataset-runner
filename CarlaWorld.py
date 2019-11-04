@@ -82,17 +82,20 @@ class CarlaWorld:
         bp.set_attribute('image_size_y', f'{sensor_height}')
         bp.set_attribute('fov', '110')
         bp.set_attribute('sensor_tick', str(self.global_sensor_tick))
+
         # Adjust sensor relative position to the vehicle
         spawn_point = carla.Transform(carla.Location(x=0.8, z=1.7))
         self.rgb_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
+
         # Camera calibration
         fov = 110
         calibration = np.identity(3)
         calibration[0, 2] = sensor_width / 2.0
         calibration[1, 2] = sensor_height / 2.0
         calibration[0, 0] = calibration[1, 1] = sensor_width / (2.0 * np.tan(fov * np.pi / 360.0))
-        self.rgb_camera.calibration = calibration
+        self.rgb_camera.calibration = calibration  # Parameter K of the camera
         self.actor_list.append(self.rgb_camera)
+
         # Capture data
         # self.rgb_camera.listen(lambda img: img.save_to_disk(os.path.join('data', 'rgb', 'rgb{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S")))))
         self.rgb_camera.listen(lambda img: self.process_rgb_img(img, sensor_width, sensor_height))
@@ -132,19 +135,35 @@ class CarlaWorld:
         spawn_point = carla.Transform(carla.Location(x=0.8, z=1.7))
         self.semantic_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
         self.actor_list.append(self.semantic_camera)
-        self.semantic_camera.listen(lambda data: data.save_to_disk(os.path.join('data', 'semantic', 'sem{:010d}.jpeg'.format(data.frame)), cc))
+        self.semantic_camera.listen(lambda data: data.save_to_disk(
+            os.path.join('data', 'semantic', 'sem{0}'.format(time.strftime("%Y%m%d-%H%M%S"))), cc))
 
-    def put_bb_sensor(self):
+    def get_bb_data(self):
         vehicles_on_screen = self.world.get_actors().filter('vehicle.*')
         walkers_on_screen = self.world.get_actors().filter('walker.*')
         bounding_boxes_vehicles = ClientSideBoundingBoxes.get_bounding_boxes(vehicles_on_screen, self.rgb_camera)
         bounding_boxes_walkers = ClientSideBoundingBoxes.get_bounding_boxes(walkers_on_screen, self.rgb_camera)
-        print('bounding_boxes_vehicles', bounding_boxes_vehicles)
-        print('bounding_boxes_walkers', bounding_boxes_walkers)
+
+        np.savez(os.path.join('data', 'bbox', 'bb{0}'.format(time.strftime("%Y%m%d-%H%M%S"))),
+                 bounding_boxes_vehicles, bounding_boxes_walkers)
+
+        # with open(os.path.join('data', 'bbox', 'bb_vehicle{0}.txt'.format(time.strftime("%Y%m%d-%H%M%S"))), 'w') as file:
+        #     file.write(str(bounding_boxes_vehicles))
+        # with open(os.path.join('data', 'bbox', 'bb_walker{0}.txt'.format(time.strftime("%Y%m%d-%H%M%S"))), 'w') as file:
+        #     file.write(str(bounding_boxes_walkers))
 
     def process_rgb_img(self, img, sensor_width, sensor_height):
         img = np.array(img.raw_data)
         img = img.reshape((sensor_height, sensor_width, 4))
         img = img[:, :, :3]
         cv2.imwrite(os.path.join('data', 'rgb', 'rgb{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S"))), img)
-        self.put_bb_sensor()
+        self.get_bb_data()
+
+    def carla_client_tick(self, total_time):
+        for time_left in range(total_time, 0, -1):
+            sys.stdout.write("\r")
+            sys.stdout.write("sleeping for more {0} seconds".format(time_left))
+            sys.stdout.flush()
+            self.world.tick()
+            time.sleep(1)
+        print('\n')
