@@ -1,3 +1,4 @@
+import os
 import cv2
 import numpy as np
 
@@ -34,10 +35,12 @@ def to_bgra_array(image):
 
 
 if __name__ == "__main__":
-    depth_file = 'data/depth_sample.npy'
+    path = "/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/dataset_collector/data"
+    time = "20191106-132309"
+    depth_file = os.path.join(path, "depth", "depth{0}.npy".format(time))
     data = np.load(depth_file)
 
-    data = data.reshape((480, 640, 4))
+    data = data.reshape((768, 1024, 4))
     data = data.astype(np.float32)
     # Apply (R + G * 256 + B * 256 * 256) / (256 * 256 * 256 - 1).
     normalized_depth = np.dot(data[:, :, :3], [65536.0, 256.0, 1.0])
@@ -56,3 +59,8 @@ if __name__ == "__main__":
     cv2.imwrite('data/depth_minmax_colormap.png', normalized_depth)
 
 
+# TODO
+# Plano:
+#  - Pegar BB 3D nas coordenadas do MUNDO
+#  - Pegar depth map nas coordenadas do MUNDO
+#  - Comparar se pelo menos um ponto do volume da BB 3D está presente na coordenada do depth map. Se estiver, então é uma bounding box válida.

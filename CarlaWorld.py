@@ -28,7 +28,7 @@ class CarlaWorld:
         self.global_sensor_tick = global_sensor_tick
         self.actor_list = []
 
-    def set_weather(self):
+    def set_weather(self, choice="Default"):
         # Changing weather https://carla.readthedocs.io/en/stable/carla_settings/
         weather_options = {"Default": carla.WeatherParameters.Default, "ClearNoon": carla.WeatherParameters.ClearNoon,
                            "CloudyNoon": carla.WeatherParameters.CloudyNoon, "WetNoon": carla.WeatherParameters.WetNoon,
@@ -43,7 +43,7 @@ class CarlaWorld:
                            "MidRainSunset": carla.WeatherParameters.MidRainSunset,
                            "HardRainSunset": carla.WeatherParameters.MidRainSunset,
                            "SoftRainSunset": carla.WeatherParameters.SoftRainSunset}
-        weather = self.world.set_weather(weather_options['Default'])
+        self.world.set_weather(weather_options[choice])
 
     def clean_actor_list(self):
         print('Destroying actors...')
@@ -57,7 +57,7 @@ class CarlaWorld:
         self.NPC.create_npcs(number_of_vehicles, number_of_walkers)
 
     def spawn_vehicle(self):
-        bp = self.blueprint_library.filter('model3')[0]
+        bp = self.blueprint_library.filter('audi')[0]
         current_town = self.world.get_map()
         all_spawn_points = current_town.get_spawn_points()
         failed_to_spawn = True
@@ -84,7 +84,7 @@ class CarlaWorld:
         bp.set_attribute('sensor_tick', str(self.global_sensor_tick))
 
         # Adjust sensor relative position to the vehicle
-        spawn_point = carla.Transform(carla.Location(x=0.8, z=1.7))
+        spawn_point = carla.Transform(carla.Location(x=1, z=2))
         self.rgb_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
 
         # Camera calibration
@@ -107,11 +107,11 @@ class CarlaWorld:
         bp.set_attribute('image_size_y', f'{sensor_height}')
         bp.set_attribute('fov', '110')
         bp.set_attribute('sensor_tick', str(self.global_sensor_tick))
-        cc = carla.ColorConverter.Depth
         # Adjust sensor relative position to the vehicle
-        spawn_point = carla.Transform(carla.Location(x=0.8, z=1.5))
+        spawn_point = carla.Transform(carla.Location(x=1, z=2))
         self.depth_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
         self.actor_list.append(self.depth_camera)
+        # cc = carla.ColorConverter.Depth
         # self.depth_camera.listen(lambda img: img.save_to_disk(os.path.join('data', 'depth', 'depth{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S")))), cc))
         self.depth_camera.listen(lambda data: self.save_depth_data(data))
 
@@ -130,27 +130,23 @@ class CarlaWorld:
         bp.set_attribute('image_size_y', f'{sensor_height}')
         bp.set_attribute('fov', '110')
         bp.set_attribute('sensor_tick', str(self.global_sensor_tick))
-        cc = carla.ColorConverter.CityScapesPalette
         # Adjust sensor relative position to the vehicle
-        spawn_point = carla.Transform(carla.Location(x=0.8, z=1.7))
+        spawn_point = carla.Transform(carla.Location(x=1, z=2))
         self.semantic_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
         self.actor_list.append(self.semantic_camera)
-        self.semantic_camera.listen(lambda data: data.save_to_disk(
-            os.path.join('data', 'semantic', 'sem{0}'.format(time.strftime("%Y%m%d-%H%M%S"))), cc))
+        # self.semantic_camera.listen(lambda data: data.save_to_disk(
+        #     os.path.join('data', 'semantic', 'sem{0}'.format(time.strftime("%Y%m%d-%H%M%S"))), cc))
+        self.semantic_camera.listen(lambda data: self.process_semantic_img(data, sensor_width, sensor_height))
 
     def get_bb_data(self):
-        vehicles_on_screen = self.world.get_actors().filter('vehicle.*')
-        walkers_on_screen = self.world.get_actors().filter('walker.*')
-        bounding_boxes_vehicles = ClientSideBoundingBoxes.get_bounding_boxes(vehicles_on_screen, self.rgb_camera)
-        bounding_boxes_walkers = ClientSideBoundingBoxes.get_bounding_boxes(walkers_on_screen, self.rgb_camera)
-
+        vehicles_on_world = self.world.get_actors().filter('vehicle.*')
+        walkers_on_world = self.world.get_actors().filter('walker.*')
+        bounding_boxes_vehicles, bounding_boxes_coordinates_vehicles = ClientSideBoundingBoxes.get_bounding_boxes(vehicles_on_world, self.rgb_camera)
+        bounding_boxes_walkers, bounding_boxes_coordinates_walkers = ClientSideBoundingBoxes.get_bounding_boxes(walkers_on_world, self.rgb_camera)
         np.savez(os.path.join('data', 'bbox', 'bb{0}'.format(time.strftime("%Y%m%d-%H%M%S"))),
                  bounding_boxes_vehicles, bounding_boxes_walkers)
-
-        # with open(os.path.join('data', 'bbox', 'bb_vehicle{0}.txt'.format(time.strftime("%Y%m%d-%H%M%S"))), 'w') as file:
-        #     file.write(str(bounding_boxes_vehicles))
-        # with open(os.path.join('data', 'bbox', 'bb_walker{0}.txt'.format(time.strftime("%Y%m%d-%H%M%S"))), 'w') as file:
-        #     file.write(str(bounding_boxes_walkers))
+        np.savez(os.path.join('data', 'bbox', 'bb_coord{0}'.format(time.strftime("%Y%m%d-%H%M%S"))),
+                 bounding_boxes_coordinates_vehicles, bounding_boxes_coordinates_walkers)
 
     def process_rgb_img(self, img, sensor_width, sensor_height):
         img = np.array(img.raw_data)
@@ -159,10 +155,19 @@ class CarlaWorld:
         cv2.imwrite(os.path.join('data', 'rgb', 'rgb{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S"))), img)
         self.get_bb_data()
 
-    def carla_client_tick(self, total_time):
-        for time_left in range(total_time, 0, -1):
+    def process_semantic_img(self, img, sensor_width, sensor_height):
+        #cc = carla.ColorConverter.CityScapesPalette
+        #img.save_to_disk(os.path.join('data', 'semantic', 'sem{0}'.format(time.strftime("%Y%m%d-%H%M%S"))), cc)
+
+        img = np.array(img.raw_data)
+        img = img.reshape((sensor_height, sensor_width, 4))
+        img = img[:, :, :3]
+        np.savez(os.path.join('data', 'semantic', 'semantic{0}'.format(time.strftime("%Y%m%d-%H%M%S"))), img)
+
+    def carla_client_tick(self, number_of_ticks):
+        for tick_number in range(number_of_ticks, 0, -1):
             sys.stdout.write("\r")
-            sys.stdout.write("sleeping for more {0} seconds".format(time_left))
+            sys.stdout.write("ticking for more {0} times".format(tick_number))
             sys.stdout.flush()
             self.world.tick()
             time.sleep(1)

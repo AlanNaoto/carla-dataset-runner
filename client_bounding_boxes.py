@@ -65,40 +65,19 @@ class ClientSideBoundingBoxes(object):
         """
         Creates 3D bounding boxes based on carla vehicle list and camera.
         """
+        # bounding_boxes = [ClientSideBoundingBoxes.get_bounding_box(vehicle, camera) for vehicle in vehicles]
+        bounding_boxes = []
+        cords_x_y_z = []
+        for vehicle in vehicles:
+            bb, x_y_z = ClientSideBoundingBoxes.get_bounding_box(vehicle, camera)
+            # filter objects behind camera
+            if all(bb[:, 2] > 0):
+                bounding_boxes.append(bb)
+                cords_x_y_z.append(x_y_z)
 
-        bounding_boxes = [ClientSideBoundingBoxes.get_bounding_box(vehicle, camera) for vehicle in vehicles]
         # filter objects behind camera
-        bounding_boxes = [bb for bb in bounding_boxes if all(bb[:, 2] > 0)]
-        return bounding_boxes
-
-    @staticmethod
-    def draw_bounding_boxes(display, bounding_boxes):
-        """
-        Draws bounding boxes on pygame display.
-        """
-
-        bb_surface = pygame.Surface((VIEW_WIDTH, VIEW_HEIGHT))
-        bb_surface.set_colorkey((0, 0, 0))
-        for bbox in bounding_boxes:
-            points = [(int(bbox[i, 0]), int(bbox[i, 1])) for i in range(8)]
-            # draw lines
-            # base
-            pygame.draw.line(bb_surface, BB_COLOR, points[0], points[1])
-            pygame.draw.line(bb_surface, BB_COLOR, points[0], points[1])
-            pygame.draw.line(bb_surface, BB_COLOR, points[1], points[2])
-            pygame.draw.line(bb_surface, BB_COLOR, points[2], points[3])
-            pygame.draw.line(bb_surface, BB_COLOR, points[3], points[0])
-            # top
-            pygame.draw.line(bb_surface, BB_COLOR, points[4], points[5])
-            pygame.draw.line(bb_surface, BB_COLOR, points[5], points[6])
-            pygame.draw.line(bb_surface, BB_COLOR, points[6], points[7])
-            pygame.draw.line(bb_surface, BB_COLOR, points[7], points[4])
-            # base-top
-            pygame.draw.line(bb_surface, BB_COLOR, points[0], points[4])
-            pygame.draw.line(bb_surface, BB_COLOR, points[1], points[5])
-            pygame.draw.line(bb_surface, BB_COLOR, points[2], points[6])
-            pygame.draw.line(bb_surface, BB_COLOR, points[3], points[7])
-        display.blit(bb_surface, (0, 0))
+        # bounding_boxes = [bb for bb in bounding_boxes if all(bb[:, 2] > 0) and all(bb[:, 0] > 0)]  # FIXME bb[:,0]>0 pode ser uma fonte de problemas no futuro.
+        return bounding_boxes, cords_x_y_z
 
     @staticmethod
     def get_bounding_box(vehicle, camera):
@@ -111,7 +90,7 @@ class ClientSideBoundingBoxes(object):
         cords_y_minus_z_x = np.concatenate([cords_x_y_z[1, :], -cords_x_y_z[2, :], cords_x_y_z[0, :]])
         bbox = np.transpose(np.dot(camera.calibration, cords_y_minus_z_x))
         camera_bbox = np.concatenate([bbox[:, 0] / bbox[:, 2], bbox[:, 1] / bbox[:, 2], bbox[:, 2]], axis=1)
-        return camera_bbox
+        return camera_bbox, cords_x_y_z
 
     @staticmethod
     def _create_bb_points(vehicle):

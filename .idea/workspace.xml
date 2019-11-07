@@ -1,7 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a41a94bc-a677-4b27-9044-cbb0c43d576e" name="Default Changelist" comment="" />
+    <list default="true" id="a41a94bc-a677-4b27-9044-cbb0c43d576e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CarlaWorld.py" beforeDir="false" afterPath="$PROJECT_DIR$/CarlaWorld.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/boxed_img.png" beforeDir="false" afterPath="$PROJECT_DIR$/check_bb/boxed_img.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/check_bb/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/test_imgs/bb20191104-142916.npz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/test_imgs/bb20191104-142925.npz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/test_imgs/bb20191104-171700.npz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/test_imgs/depth20191104-142916.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/test_imgs/rgb20191104-142916.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/test_imgs/rgb20191104-142925.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/test_imgs/rgb20191104-171700.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/test_imgs/sem20191104-142916.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/test_imgs/sem20191104-142925.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/test_imgs/sem20191104-171700.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/client_bounding_boxes.py" beforeDir="false" afterPath="$PROJECT_DIR$/client_bounding_boxes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/old/check_depth_data.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old/depth_data" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old/depth_data.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old/depth_default.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old/depth_minmax_colormap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old/depth_minmaxnorm.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old/depth_rgb.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old/depth_sample.npy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old/normalized_depth.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old/sensor.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spawn_npc.py" beforeDir="false" afterPath="$PROJECT_DIR$/spawn_npc.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,8 +49,9 @@
   <component name="ProjectId" id="1SBlCkFBsI1num67FBw1HPPOBnX" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/check_bb" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
@@ -39,7 +68,7 @@
     </option>
   </component>
   <component name="RunManager" selected="Python.main">
-    <configuration name="CarlaWorld" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="check_depth_data" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="dataset_collector" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -47,11 +76,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/old" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/CarlaWorld.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/old/check_depth_data.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -60,7 +89,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="client_bounding_boxes" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="client_bounding_boxes2" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="dataset_collector" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -72,7 +101,28 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/client_bounding_boxes.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/client_bounding_boxes2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="dataset_collector" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/check_bb" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/check_bb/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -102,7 +152,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="sensor" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="read_tfrecord" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="dataset_collector" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -110,32 +160,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../Waymo" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/sensor.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="spawn_npc" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="dataset_collector" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/spawn_npc.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../Waymo/read_tfrecord.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -147,10 +176,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.client_bounding_boxes" />
-        <item itemvalue="Python.spawn_npc" />
-        <item itemvalue="Python.CarlaWorld" />
-        <item itemvalue="Python.sensor" />
+        <item itemvalue="Python.check_depth_data" />
+        <item itemvalue="Python.read_tfrecord" />
+        <item itemvalue="Python.main (1)" />
+        <item itemvalue="Python.client_bounding_boxes2" />
       </list>
     </recent_temporary>
   </component>
@@ -206,5 +235,26 @@
     <MESSAGE value="Fixed file namesaving format for computer local timestamp.&#10;FIxed depth information file save type to numpy array." />
     <MESSAGE value="Implemented scratch of bounding box ground truth generation via RGB &#10;cameras. Set simulation mode to synchronous" />
     <option name="LAST_COMMIT_MESSAGE" value="Implemented scratch of bounding box ground truth generation via RGB &#10;cameras. Set simulation mode to synchronous" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../../Waymo/read_tfrecord.py</url>
+          <line>12</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/old/check_depth_data.py</url>
+          <line>48</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/check_bb/main.py</url>
+          <line>101</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

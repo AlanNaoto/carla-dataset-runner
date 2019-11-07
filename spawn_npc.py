@@ -23,34 +23,17 @@ import random
 
 class NPCClass:
     def __init__(self):
-        self.args = self.Args()
         logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
         self.vehicles_list = []
         self.walkers_list = []
         self.all_id = []
-        self.client = carla.Client(self.args.host, self.args.port)
+        self.client = carla.Client('127.0.0.1', 2000)
         self.client.set_timeout(2.0)
-
-    class Args():
-        def __init__(self):
-            # Params adapted from the main spawn_npc.py script on examples folder
-            self.host = '127.0.0.1'
-            self.port = 2000
-            # self.number_of_vehicles = number_of_vehicles
-            # self.number_of_walkers = number_of_walkers
-            self.safe = False
-            self.filterv = 'vehicle.*'
-            self.filterw = 'walker.pedestrian.*'
 
     def create_npcs(self, number_of_vehicles=150, number_of_walkers=70):
         world = self.client.get_world()
-        blueprints = world.get_blueprint_library().filter(self.args.filterv)
-        blueprintsWalkers = world.get_blueprint_library().filter(self.args.filterw)
-
-        if self.args.safe:
-            blueprints = [x for x in blueprints if int(x.get_attribute('number_of_wheels')) == 4]
-            blueprints = [x for x in blueprints if not x.id.endswith('isetta')]
-            blueprints = [x for x in blueprints if not x.id.endswith('carlacola')]
+        blueprints = world.get_blueprint_library().filter('vehicle.*')
+        blueprintsWalkers = world.get_blueprint_library().filter('walker.pedestrian.*')
 
         spawn_points = world.get_map().get_spawn_points()
         number_of_spawn_points = len(spawn_points)
@@ -74,7 +57,11 @@ class NPCClass:
         for n, transform in enumerate(spawn_points):
             if n >= number_of_vehicles:
                 break
-            blueprint = random.choice(blueprints)
+            while True:
+                blueprint = random.choice(blueprints)
+                # Taking out bicycles and motorcycles, since the semantic/bb labeling for that is mixed with pedestrian
+                if int(blueprint.get_attribute('number_of_wheels')) > 2:
+                    break
             if blueprint.has_attribute('color'):
                 color = random.choice(blueprint.get_attribute('color').recommended_values)
                 blueprint.set_attribute('color', color)
