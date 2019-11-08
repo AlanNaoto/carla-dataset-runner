@@ -36,9 +36,9 @@ def proccess_3D_bb_with_depth(bb_3d_actors, depth_array, sensor_width, sensor_he
     for actor in bb_3d_actors:
         actor_bbs = []
         for bb_xyz_point in actor:
-            x = int(bb_xyz_point[0]) - 1  # -1 is accounting for the x position of the camera on the vehicle
+            x = int(bb_xyz_point[0]) - 1  # -1 is accounting for the x=1 position of the camera on the vehicle
             y = int(bb_xyz_point[1])
-            z = bb_xyz_point[2] - 2  # -2 is accounting for the Z position of the camera on the vehicle
+            z = bb_xyz_point[2] - 2  # -2 is accounting for the Z=2 position of the camera on the vehicle
 
             # These limits stretching are done so that the vehicles' bounding boxes appear whole even if only half of
             # the car is shown

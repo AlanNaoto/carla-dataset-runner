@@ -9,15 +9,14 @@ ok 1) Create city
 ok 2) Set weather
 ok 3) Spawn cars and pedestrians
 ok 4) Check if transit parameters (traffic lights) work ok
-progress 5) Put RGB camera, depth sensor and bbox sensors
+ok 5) Put RGB camera, depth sensor and bbox sensors
 
 # TODO LIST SPECIFIC
 # [ok] - Fix camera position to not get car hood
 # [ok] - ERASE cyclists and motorcyclists from blueprint creation, since their labeling is not adequate
-# [only size filter added] - Fix unlabeled data on check_bb/main.py (semantic check)
 # [fix it when dealing with waymo] - Define a smaller image window? -> For convenience, use same size as waymo dataset's rgb images
-# - Integrate BB code into main code
-#   - Delete creation of numpy bb files (keep semantic for sanity?)
+# [progress]- Integrate BB code into main code
+#   [progress] - Delete creation of numpy bb files (keep semantic for sanity?)
 #   - Generate BB txt file
 # - Generalize code to create iteratively many ambients [prob not?]
 """

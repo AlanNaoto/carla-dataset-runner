@@ -141,12 +141,10 @@ class CarlaWorld:
     def get_bb_data(self):
         vehicles_on_world = self.world.get_actors().filter('vehicle.*')
         walkers_on_world = self.world.get_actors().filter('walker.*')
-        bounding_boxes_vehicles, bounding_boxes_coordinates_vehicles = ClientSideBoundingBoxes.get_bounding_boxes(vehicles_on_world, self.rgb_camera)
-        bounding_boxes_walkers, bounding_boxes_coordinates_walkers = ClientSideBoundingBoxes.get_bounding_boxes(walkers_on_world, self.rgb_camera)
+        bounding_boxes_vehicles = ClientSideBoundingBoxes.get_bounding_boxes(vehicles_on_world, self.rgb_camera)
+        bounding_boxes_walkers = ClientSideBoundingBoxes.get_bounding_boxes(walkers_on_world, self.rgb_camera)
         np.savez(os.path.join('data', 'bbox', 'bb{0}'.format(time.strftime("%Y%m%d-%H%M%S"))),
                  bounding_boxes_vehicles, bounding_boxes_walkers)
-        np.savez(os.path.join('data', 'bbox', 'bb_coord{0}'.format(time.strftime("%Y%m%d-%H%M%S"))),
-                 bounding_boxes_coordinates_vehicles, bounding_boxes_coordinates_walkers)
 
     def process_rgb_img(self, img, sensor_width, sensor_height):
         img = np.array(img.raw_data)

@@ -1,59 +1,15 @@
-#!/usr/bin/env python
-
-# Copyright (c) 2019 Aptiv
-#
-# This work is licensed under the terms of the MIT license.
-# For a copy, see <https://opensource.org/licenses/MIT>.
-
-"""
-An example of client-side bounding boxes with basic car controls.
-
-Controls:
-
-    W            : throttle
-    S            : brake
-    AD           : steer
-    Space        : hand-brake
-
-    ESC          : quit
-"""
-
-# ==============================================================================
-# -- find carla module ---------------------------------------------------------
-# ==============================================================================
-
-
-import glob
 import os
 import sys
-
 MAIN_DIR = os.path.dirname(os.path.abspath(__file__))
 CARLA_DIR = os.path.join(os.path.dirname(MAIN_DIR), 'CARLA_0.9.6')
 CARLA_EGG_PATH = os.path.join(CARLA_DIR, 'PythonAPI', 'carla', 'dist', 'carla-0.9.6-py3.5-linux-x86_64.egg')
 sys.path.append(CARLA_EGG_PATH)
-
-
-# ==============================================================================
-# -- imports -------------------------------------------------------------------
-# ==============================================================================
-
 import carla
-
-import weakref
-import random
 import numpy as np
-
-VIEW_WIDTH = 1920//2
-VIEW_HEIGHT = 1080//2
-VIEW_FOV = 90
-
-BB_COLOR = (248, 64, 24)
 
 # ==============================================================================
 # -- ClientSideBoundingBoxes ---------------------------------------------------
 # ==============================================================================
-
-
 class ClientSideBoundingBoxes(object):
     """
     This is a module responsible for creating 3D bounding boxes and drawing them
@@ -65,19 +21,10 @@ class ClientSideBoundingBoxes(object):
         """
         Creates 3D bounding boxes based on carla vehicle list and camera.
         """
-        # bounding_boxes = [ClientSideBoundingBoxes.get_bounding_box(vehicle, camera) for vehicle in vehicles]
-        bounding_boxes = []
-        cords_x_y_z = []
-        for vehicle in vehicles:
-            bb, x_y_z = ClientSideBoundingBoxes.get_bounding_box(vehicle, camera)
-            # filter objects behind camera
-            if all(bb[:, 2] > 0):
-                bounding_boxes.append(bb)
-                cords_x_y_z.append(x_y_z)
-
+        bounding_boxes = [ClientSideBoundingBoxes.get_bounding_box(vehicle, camera) for vehicle in vehicles]
         # filter objects behind camera
-        # bounding_boxes = [bb for bb in bounding_boxes if all(bb[:, 2] > 0) and all(bb[:, 0] > 0)]  # FIXME bb[:,0]>0 pode ser uma fonte de problemas no futuro.
-        return bounding_boxes, cords_x_y_z
+        bounding_boxes = [bb for bb in bounding_boxes if all(bb[:, 2] > 0)]
+        return bounding_boxes
 
     @staticmethod
     def get_bounding_box(vehicle, camera):
@@ -90,7 +37,7 @@ class ClientSideBoundingBoxes(object):
         cords_y_minus_z_x = np.concatenate([cords_x_y_z[1, :], -cords_x_y_z[2, :], cords_x_y_z[0, :]])
         bbox = np.transpose(np.dot(camera.calibration, cords_y_minus_z_x))
         camera_bbox = np.concatenate([bbox[:, 0] / bbox[:, 2], bbox[:, 1] / bbox[:, 2], bbox[:, 2]], axis=1)
-        return camera_bbox, cords_x_y_z
+        return camera_bbox
 
     @staticmethod
     def _create_bb_points(vehicle):

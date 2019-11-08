@@ -81,7 +81,7 @@ class NPCClass:
         # Spawn Walkers
         # -------------
         # 1. take all the random locations to spawn
-        spawn_points = []
+        # spawn_points = []
         # for i in range(number_of_walkers):
         #     spawn_point = carla.Transform()
         #     loc = world.get_random_location_from_navigation()
