@@ -2,33 +2,40 @@
 Alan Naoto Tabata
 naoto321@gmail.com
 Created: 04/11/2019
-Updated: 07/11/2019
+Updated: 14/11/2019
 """
-import os
-import numpy as np
 import cv2
 
-path = "/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/dataset_collector/data"
-time = "20191108-112502"
 
-rgb = os.path.join(path, "rgb", "rgb{0}.jpeg".format(time))
-bb_3d_file = os.path.join(path, "bbox", "bb{0}.npz".format(time))
-semantic_file = os.path.join(path, "semantic", "semantic{0}.npz".format(time))
-depth_file = os.path.join(path, "depth", "depth{0}.npy".format(time))
-sensor_width = 1024
-sensor_height = 768
+def filter_bb_to_2d(bb_3d_data, depth_array, sensor_width=1024, sensor_height=768):
+    # Bounding Box processing
+    bb_3d_vehicles = bb_3d_data[0]
+    bb_3d_walkers = bb_3d_data[1]
+    print('total vehicles on world', len(bb_3d_vehicles))
+    print('total walkers on world', len(bb_3d_walkers))
 
+    # Depth + bb coordinate check
+    valid_bb_vehicles = proccess_3D_bb_with_depth(bb_3d_vehicles, depth_array, sensor_width, sensor_height)
+    valid_bb_walkers = proccess_3D_bb_with_depth(bb_3d_walkers, depth_array, sensor_width, sensor_height)
+    valid_bb_vehicles = transform_bb_3d_to_2d(valid_bb_vehicles, sensor_width, sensor_height)
+    valid_bb_walkers = transform_bb_3d_to_2d(valid_bb_walkers, sensor_width, sensor_height)
 
-def proccess_depth(depth_file):
-    data = np.load(depth_file)
+    # FIXME Saving results as imgs is optional - need to fix rgb array input reference
+    save = False
+    if save:
+        img = False
+        rgb_img = cv2.imread(rgb)
+        cv2.imwrite('raw_img.jpeg', rgb_img)
 
-    data = data.reshape((768, 1024, 4))
-    data = data.astype(np.float32)
-    # Apply (R + G * 256 + B * 256 * 256) / (256 * 256 * 256 - 1).
-    normalized_depth = np.dot(data[:, :, :3], [65536.0, 256.0, 1.0])
-    normalized_depth /= 16777215.0  # (256.0 * 256.0 * 256.0 - 1.0)
-    depth_meters = normalized_depth * 1000
-    return depth_meters
+        for bb in valid_bb_vehicles:
+            cv2.rectangle(rgb_img, (bb[0], bb[1]), (bb[2], bb[3]), (0, 255, 0), 1)
+        for bb in valid_bb_walkers:
+            cv2.rectangle(rgb_img, (bb[0], bb[1]), (bb[2], bb[3]), (0, 0, 255), 1)
+
+        cv2.imwrite('filtered_boxed_img.jpeg', rgb_img)
+        print('bb_walkers on img:', len(valid_bb_walkers))
+        print('bb_vehicles on img:', len(valid_bb_vehicles))
+    return valid_bb_vehicles, valid_bb_walkers
 
 
 def proccess_3D_bb_with_depth(bb_3d_actors, depth_array, sensor_width, sensor_height):
@@ -67,7 +74,7 @@ def proccess_3D_bb_with_depth(bb_3d_actors, depth_array, sensor_width, sensor_he
     return valid_bbs
 
 
-def transform_bb_3d_to_2d(bb_3d_actor):
+def transform_bb_3d_to_2d(bb_3d_actor, sensor_width, sensor_height):
     valid_bbs = []
     for actor in bb_3d_actor:
         x_data = [x[0] for x in actor]
@@ -85,33 +92,3 @@ def transform_bb_3d_to_2d(bb_3d_actor):
             valid_bbs.append([x_min, y_min, x_max, y_max])
     return valid_bbs
 
-
-if __name__ == "__main__":
-    # Bounding Box processing
-    bb_3d_data = np.load(bb_3d_file)
-    bb_3d_vehicles = bb_3d_data['arr_0']
-    bb_3d_walkers = bb_3d_data['arr_1']
-    print('total vehicles on world', len(bb_3d_vehicles))
-    print('total walkers on world', len(bb_3d_walkers))
-
-    # Depth
-    depth_array = proccess_depth(depth_file)
-
-    # Depth + bb coordinate check
-    valid_bb_vehicles = proccess_3D_bb_with_depth(bb_3d_vehicles, depth_array, sensor_width, sensor_height)
-    valid_bb_walkers = proccess_3D_bb_with_depth(bb_3d_walkers, depth_array, sensor_width, sensor_height)
-    valid_bb_vehicles = transform_bb_3d_to_2d(valid_bb_vehicles)
-    valid_bb_walkers = transform_bb_3d_to_2d(valid_bb_walkers)
-
-    # Saving results
-    rgb_img = cv2.imread(rgb)
-    cv2.imwrite('raw_img.jpeg', rgb_img)
-
-    for bb in valid_bb_vehicles:
-        cv2.rectangle(rgb_img, (bb[0], bb[1]), (bb[2], bb[3]), (0, 255, 0), 1)
-    for bb in valid_bb_walkers:
-        cv2.rectangle(rgb_img, (bb[0], bb[1]), (bb[2], bb[3]), (0, 0, 255), 1)
-
-    cv2.imwrite('filtered_boxed_img.jpeg', rgb_img)
-    print('bb_walkers on img:', len(valid_bb_walkers))
-    print('bb_vehicles on img:', len(valid_bb_vehicles))

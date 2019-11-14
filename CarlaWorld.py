@@ -11,21 +11,19 @@ import numpy as np
 import cv2
 from spawn_npc import NPCClass
 from client_bounding_boxes import ClientSideBoundingBoxes
+from set_synchronous_mode import CarlaSyncMode
+from bb_filter import apply_filters_to_3d_bb
 
 
 class CarlaWorld:
-    def __init__(self, global_sensor_tick):
+    def __init__(self, HDF5_file):
+        self.HDF5_file = HDF5_file
+        # Carla initialization
         client = carla.Client('localhost', 2000)
         client.set_timeout(2.0)
         self.world = client.get_world()
         print('Successfully connected to CARLA')
-        # Setting synchronous mode and fixed time-step so that all sensors data captured happen at the same time
-        settings = self.world.get_settings()
-        settings.synchronous_mode = True
-        settings.fixed_delta_seconds = 0.05  # Time-step with 20 FPS
-        # self.world.apply_settings(settings)
         self.blueprint_library = self.world.get_blueprint_library()
-        self.global_sensor_tick = global_sensor_tick
         self.actor_list = []
 
     def set_weather(self, choice="Default"):
@@ -75,98 +73,92 @@ class CarlaWorld:
         self.actor_list.append(vehicle)
         return vehicle
 
-    def put_rgb_sensor(self, vehicle, sensor_width=640, sensor_height=480):
+    def put_rgb_sensor(self, vehicle, sensor_width=640, sensor_height=480, fov=110):
         # https://carla.readthedocs.io/en/latest/cameras_and_sensors/
         bp = self.blueprint_library.find('sensor.camera.rgb')
         bp.set_attribute('image_size_x', f'{sensor_width}')
         bp.set_attribute('image_size_y', f'{sensor_height}')
         bp.set_attribute('fov', '110')
-        bp.set_attribute('sensor_tick', str(self.global_sensor_tick))
 
         # Adjust sensor relative position to the vehicle
         spawn_point = carla.Transform(carla.Location(x=1, z=2))
         self.rgb_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
 
         # Camera calibration
-        fov = 110
         calibration = np.identity(3)
         calibration[0, 2] = sensor_width / 2.0
         calibration[1, 2] = sensor_height / 2.0
         calibration[0, 0] = calibration[1, 1] = sensor_width / (2.0 * np.tan(fov * np.pi / 360.0))
         self.rgb_camera.calibration = calibration  # Parameter K of the camera
         self.actor_list.append(self.rgb_camera)
-
         # Capture data
         # self.rgb_camera.listen(lambda img: img.save_to_disk(os.path.join('data', 'rgb', 'rgb{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S")))))
-        self.rgb_camera.listen(lambda img: self.process_rgb_img(img, sensor_width, sensor_height))
+        # self.rgb_camera.listen(lambda img: self.process_rgb_img(img, sensor_width, sensor_height))
 
-    def put_depth_sensor(self, vehicle, sensor_width=640, sensor_height=480):
+    def put_depth_sensor(self, vehicle, sensor_width=640, sensor_height=480, fov=110):
         # https://carla.readthedocs.io/en/latest/cameras_and_sensors/
         bp = self.blueprint_library.find('sensor.camera.depth')
         bp.set_attribute('image_size_x', f'{sensor_width}')
         bp.set_attribute('image_size_y', f'{sensor_height}')
-        bp.set_attribute('fov', '110')
-        bp.set_attribute('sensor_tick', str(self.global_sensor_tick))
+        bp.set_attribute('fov', f'{fov}')
+
         # Adjust sensor relative position to the vehicle
         spawn_point = carla.Transform(carla.Location(x=1, z=2))
         self.depth_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
         self.actor_list.append(self.depth_camera)
         # cc = carla.ColorConverter.Depth
         # self.depth_camera.listen(lambda img: img.save_to_disk(os.path.join('data', 'depth', 'depth{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S")))), cc))
-        self.depth_camera.listen(lambda data: self.save_depth_data(data))
+        # self.depth_camera.listen(lambda data: self.save_depth_data(data))
 
-    def save_depth_data(self, data):
-        img = np.array(data.raw_data)
-        np.save(os.path.join('data', 'depth', 'depth{0}'.format(time.strftime("%Y%m%d-%H%M%S"))), img)
+    def process_depth_data(self, data):
         """
         normalized = (R + G * 256 + B * 256 * 256) / (256 * 256 * 256 - 1)
         in_meters = 1000 * normalized
         """
-
-    def put_semantic_sensor(self, vehicle, sensor_width=640, sensor_height=480):
-        # https://carla.readthedocs.io/en/latest/cameras_and_sensors/
-        bp = self.blueprint_library.find('sensor.camera.semantic_segmentation')
-        bp.set_attribute('image_size_x', f'{sensor_width}')
-        bp.set_attribute('image_size_y', f'{sensor_height}')
-        bp.set_attribute('fov', '110')
-        bp.set_attribute('sensor_tick', str(self.global_sensor_tick))
-        # Adjust sensor relative position to the vehicle
-        spawn_point = carla.Transform(carla.Location(x=1, z=2))
-        self.semantic_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
-        self.actor_list.append(self.semantic_camera)
-        # self.semantic_camera.listen(lambda data: data.save_to_disk(
-        #     os.path.join('data', 'semantic', 'sem{0}'.format(time.strftime("%Y%m%d-%H%M%S"))), cc))
-        self.semantic_camera.listen(lambda data: self.process_semantic_img(data, sensor_width, sensor_height))
+        data = np.array(data.raw_data)
+        data = data.reshape((768, 1024, 4))
+        data = data.astype(np.float32)
+        # Apply (R + G * 256 + B * 256 * 256) / (256 * 256 * 256 - 1).
+        normalized_depth = np.dot(data[:, :, :3], [65536.0, 256.0, 1.0])
+        normalized_depth /= 16777215.0  # (256.0 * 256.0 * 256.0 - 1.0)
+        depth_meters = normalized_depth * 1000
+        return depth_meters
 
     def get_bb_data(self):
         vehicles_on_world = self.world.get_actors().filter('vehicle.*')
         walkers_on_world = self.world.get_actors().filter('walker.*')
         bounding_boxes_vehicles = ClientSideBoundingBoxes.get_bounding_boxes(vehicles_on_world, self.rgb_camera)
         bounding_boxes_walkers = ClientSideBoundingBoxes.get_bounding_boxes(walkers_on_world, self.rgb_camera)
-        np.savez(os.path.join('data', 'bbox', 'bb{0}'.format(time.strftime("%Y%m%d-%H%M%S"))),
-                 bounding_boxes_vehicles, bounding_boxes_walkers)
+        return [bounding_boxes_vehicles, bounding_boxes_walkers]
 
     def process_rgb_img(self, img, sensor_width, sensor_height):
         img = np.array(img.raw_data)
         img = img.reshape((sensor_height, sensor_width, 4))
         img = img[:, :, :3]
-        cv2.imwrite(os.path.join('data', 'rgb', 'rgb{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S"))), img)
-        self.get_bb_data()
+        bb = self.get_bb_data()
+        return img, bb
 
-    def process_semantic_img(self, img, sensor_width, sensor_height):
-        #cc = carla.ColorConverter.CityScapesPalette
-        #img.save_to_disk(os.path.join('data', 'semantic', 'sem{0}'.format(time.strftime("%Y%m%d-%H%M%S"))), cc)
+    def begin_data_acquisition(self, frames_to_record, sensor_width, sensor_height):
+        recorded_frames = 0
+        with CarlaSyncMode(self.world, self.rgb_camera, self.depth_camera, fps=30) as sync_mode:
+            while True:
+                if recorded_frames == frames_to_record:
+                    print('\n')
+                    return
+                # Advance the simulation and wait for the data.
+                data = sync_mode.tick(timeout=2.0)  # If needed, self.frame can be obtained too
+                _, rgb_data, depth_data = data
+                recorded_frames += 1
 
-        img = np.array(img.raw_data)
-        img = img.reshape((sensor_height, sensor_width, 4))
-        img = img[:, :, :3]
-        np.savez(os.path.join('data', 'semantic', 'semantic{0}'.format(time.strftime("%Y%m%d-%H%M%S"))), img)
+                # Processing raw data - TODO Check if these processed data are working properly
+                rgb_array, bounding_box = self.process_rgb_img(rgb_data, sensor_width, sensor_height)
+                depth_array = self.process_depth_data(depth_data)
+                bounding_box = apply_filters_to_3d_bb(bounding_box, depth_array, sensor_width, sensor_height)
+                timestamp = round(time.time()*1000.0)
 
-    def carla_client_tick(self, number_of_ticks):
-        for tick_number in range(number_of_ticks, 0, -1):
-            sys.stdout.write("\r")
-            sys.stdout.write("ticking for more {0} times".format(tick_number))
-            sys.stdout.flush()
-            self.world.tick()
-            time.sleep(1)
-        print('\n')
+                # Saving into opened HDF5 dataset file
+                self.HDF5_file.record_data(rgb_array, depth_array, bounding_box, timestamp)
+                cv2.imwrite(os.path.join('data', 'rgb', 'rgb{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S"))), rgb_array)
+                sys.stdout.write("\r")
+                sys.stdout.write('Frame {0}/{1}'.format(recorded_frames, frames_to_record))
+                sys.stdout.flush()
