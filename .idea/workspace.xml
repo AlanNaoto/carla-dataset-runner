@@ -2,12 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a41a94bc-a677-4b27-9044-cbb0c43d576e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/HDF5Saver.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CarlaWorld.py" beforeDir="false" afterPath="$PROJECT_DIR$/CarlaWorld.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/check_bb/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/check_bb/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client_bounding_boxes_original.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/create_objects.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/HDF5Saver.py" beforeDir="false" afterPath="$PROJECT_DIR$/HDF5Saver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bb_filter.py" beforeDir="false" afterPath="$PROJECT_DIR$/bb_filter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/.idea/check_bb.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/afiltered_boxed_img.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/check_bb/main.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172024.npz" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172025.npz" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172026.npz" beforeDir="false" />
@@ -75,7 +81,6 @@
       <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172036.npz" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172037.npz" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spawn_npc.py" beforeDir="false" afterPath="$PROJECT_DIR$/spawn_npc.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -114,28 +119,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.main">
-    <configuration name="CarlaWorld" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="dataset_collector" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/CarlaWorld.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.check_hdf5_file (1)">
     <configuration name="HDF5Saver" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="dataset_collector" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -157,7 +141,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="check_depth_data" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="check_hdf5_file (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="dataset_collector" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -165,11 +149,32 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/old" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/utils/hdf5_check" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/old/check_depth_data.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/utils/hdf5_check/check_hdf5_file.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="check_hdf5_file" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="dataset_collector" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/old_utils/hdf5_check" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/old_utils/hdf5_check/check_hdf5_file.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -199,7 +204,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="read_tfrecord" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="numpyarraytest" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="dataset_collector" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -207,11 +212,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../Waymo" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/data" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../Waymo/read_tfrecord.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/data/numpyarraytest.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -222,11 +227,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.check_hdf5_file (1)" />
+        <item itemvalue="Python.check_hdf5_file" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.numpyarraytest" />
         <item itemvalue="Python.HDF5Saver" />
-        <item itemvalue="Python.CarlaWorld" />
-        <item itemvalue="Python.check_depth_data" />
-        <item itemvalue="Python.read_tfrecord" />
       </list>
     </recent_temporary>
   </component>
@@ -298,5 +303,10 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="rgb_data._lcpl" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

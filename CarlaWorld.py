@@ -140,25 +140,28 @@ class CarlaWorld:
 
     def begin_data_acquisition(self, frames_to_record, sensor_width, sensor_height):
         recorded_frames = 0
+        timestamps = []
         with CarlaSyncMode(self.world, self.rgb_camera, self.depth_camera, fps=30) as sync_mode:
             while True:
                 if recorded_frames == frames_to_record:
                     print('\n')
+                    print('Saving timestamps...')
+                    self.HDF5_file.record_all_timestamps(timestamps)
                     return
                 # Advance the simulation and wait for the data.
                 data = sync_mode.tick(timeout=2.0)  # If needed, self.frame can be obtained too
                 _, rgb_data, depth_data = data
                 recorded_frames += 1
 
-                # Processing raw data - TODO Check if these processed data are working properly
+                # Processing raw data
                 rgb_array, bounding_box = self.process_rgb_img(rgb_data, sensor_width, sensor_height)
                 depth_array = self.process_depth_data(depth_data)
                 bounding_box = apply_filters_to_3d_bb(bounding_box, depth_array, sensor_width, sensor_height)
                 timestamp = round(time.time()*1000.0)
+                timestamps.append(timestamp)
 
                 # Saving into opened HDF5 dataset file
                 self.HDF5_file.record_data(rgb_array, depth_array, bounding_box, timestamp)
-                cv2.imwrite(os.path.join('data', 'rgb', 'rgb{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S"))), rgb_array)
                 sys.stdout.write("\r")
                 sys.stdout.write('Frame {0}/{1}'.format(recorded_frames, frames_to_record))
                 sys.stdout.flush()

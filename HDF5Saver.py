@@ -1,47 +1,40 @@
 import h5py
 import numpy as np
-import os
 
 
 class HDF5Saver:
-    def __init__(self, sensor_width, sensor_height, initial_dataset_size=5000):
-        self.file = h5py.File(os.path.join("data", "carla_dataset.hdf5"), "w")
-        # FIXME Create one dataset PER data entry. JOED/LUIS tested this method, and it was the fastest to index stuff
-        self.rgb_dataset = self.file.create_dataset("rgb", (sensor_width, sensor_height, 3, initial_dataset_size),
-                                                    maxshape=(sensor_width, sensor_height, 3, None), dtype="int8")
-        self.depth_dataset = self.file.create_dataset("depth", (sensor_width, sensor_height, 1, initial_dataset_size),
-                                                      maxshape=(sensor_width, sensor_height, 1, None), dtype="float32")
-        # self.bounding_box_dataset = self.file.create_dataset("bounding_box", (100, initial_dataset_size),
-        #                                                      dtype=h5py.string_dtype())
-        self.timestamp = self.file.create_dataset("timestamp", (1, 5000), maxshape=(1, None), dtype="uint8")
+    def __init__(self, sensor_width, sensor_height, file_path_to_save="data/carla_dataset.hdf5"):
+        self.sensor_width = sensor_width
+        self.sensor_height = sensor_height
+
+        self.file = h5py.File(file_path_to_save, "w")
+        self.dt = h5py.special_dtype(vlen=np.dtype('float64'))
+        # Creating groups to store each type of data
+        self.rgb_group = self.file.create_group("rgb")
+        self.depth_group = self.file.create_group("depth")
+        self.bounding_box_group = self.file.create_group("bounding_box")
+        self.timestamp_group = self.file.create_group("timestamps")
+
         # Storing metadata
-        self.file['sensor_width'] = sensor_width
-        self.file['sensor_heigth'] = sensor_height
-        self.file['simulation_synchronization_type'] = "syncd"
+        self.file.attrs['sensor_width'] = sensor_width
+        self.file.attrs['sensor_height'] = sensor_height
+        self.file.attrs['simulation_synchronization_type'] = "syncd"
+        self.bounding_box_group.attrs['data_description'] = 'First row: vehicle. Second row: walker. Each entry in the'\
+                                                            'same row are multiple actors present in the scene.'
+        self.bounding_box_group.attrs['bbox_format'] = '[xmin, ymin, xmax, ymax] (top left coords; right bottom coords)' \
+                                                       'the vector has been flattened; therefore the data must' \
+                                                       'be captured in blocks of 4 elements'
+        self.timestamp_group.attrs['time_format'] = "current time in MILISSECONDS since the unix epoch " \
+                                                    "(time.time()*1000 in python3)"
 
-    def record_data(self, rgb_array, depth_array, bounding_box, frame_idx, timestamp):
-        self.rgb_dataset[:, :, :, frame_idx] = rgb_array
-        self.depth_dataset[:, :,  frame_idx] = depth_array
-        # self.bounding_box_dataset[:, frame_idx] = bounding_box
-        self.timestamp[:, frame_idx] = timestamp
+    def record_data(self, rgb_array, depth_array, bounding_box, timestamp):
+        timestamp = str(timestamp)
+        self.rgb_group.create_dataset(timestamp, data=rgb_array)
+        self.depth_group.create_dataset(timestamp, data=depth_array)
+        self.bounding_box_group.create_dataset(timestamp, data=bounding_box, dtype=self.dt)
 
+    def record_all_timestamps(self, timestamps_list):
+        self.timestamp_group.create_dataset("timestamps", data=np.array(timestamps_list))
 
     def close_HDF5(self):
         self.file.close()
-
-
-def read_hdf5(hdf5_file):
-    with h5py.File(hdf5_file, 'r') as file:
-        depth = file['depth']
-        rgb = file['rgb']
-        # print('file', file)
-        # print('depth', depth[:])
-        print('rgb', rgb[:, :, :, 0])
-    return None
-
-
-if __name__ == "__main__":
-    # oi = HDF5Saver(sensor_width=1024, sensor_height=768)
-    # oi.record_rgb_data(None, None)
-    # oi.close_HDF5()
-    afe = read_hdf5(os.path.join('data', 'carla_dataset.hdf5'))

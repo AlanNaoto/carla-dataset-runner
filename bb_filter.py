@@ -5,6 +5,7 @@ Created: 04/11/2019
 Updated: 14/11/2019
 """
 import cv2
+import numpy as np
 
 
 def apply_filters_to_3d_bb(bb_3d_data, depth_array, sensor_width, sensor_height):
@@ -20,6 +21,13 @@ def apply_filters_to_3d_bb(bb_3d_data, depth_array, sensor_width, sensor_height)
     valid_bb_vehicles = transform_bb_3d_to_2d(valid_bb_vehicles, sensor_width, sensor_height)
     valid_bb_walkers = transform_bb_3d_to_2d(valid_bb_walkers, sensor_width, sensor_height)
 
+    # Transform to np array for later easier saving
+    if valid_bb_vehicles.size == 0:
+        valid_bb_vehicles = np.asarray([-1, -1, -1, -1])
+    if valid_bb_walkers.size == 0:
+        valid_bb_walkers = np.asarray([-1, -1, -1, -1])
+    valid_bbs = np.asarray([valid_bb_vehicles.ravel(), valid_bb_walkers.ravel()])  # Flattening the arrays
+
     # # Saving results as imgs is optional
     # rgb_img = cv2.imread(rgb)
     # cv2.imwrite('raw_img.jpeg', rgb_img)
@@ -32,7 +40,7 @@ def apply_filters_to_3d_bb(bb_3d_data, depth_array, sensor_width, sensor_height)
     # cv2.imwrite('filtered_boxed_img.jpeg', rgb_img)
     # print('bb_walkers on img:', len(valid_bb_walkers))
     # print('bb_vehicles on img:', len(valid_bb_vehicles))
-    return valid_bb_vehicles, valid_bb_walkers
+    return valid_bbs
 
 
 def proccess_3D_bb_with_depth(bb_3d_actors, depth_array, sensor_width, sensor_height):
@@ -40,6 +48,7 @@ def proccess_3D_bb_with_depth(bb_3d_actors, depth_array, sensor_width, sensor_he
     for actor in bb_3d_actors:
         actor_bbs = []
         for bb_xyz_point in actor:
+            bb_xyz_point = np.squeeze(np.asarray(bb_xyz_point))
             x = int(bb_xyz_point[0]) - 1  # -1 is accounting for the x=1 position of the camera on the vehicle
             y = int(bb_xyz_point[1])
             z = bb_xyz_point[2] - 2  # -2 is accounting for the Z=2 position of the camera on the vehicle
@@ -86,6 +95,8 @@ def transform_bb_3d_to_2d(bb_3d_actor, sensor_width, sensor_height):
         # print('shape {0}; size {1}; proportion {2}'.format(shape, size, proportion))
         # Avoiding to get very small bounding boxes
         if proportion > 3E-4:  # 3E-4 was a value found by observation
-            valid_bbs.append([x_min, y_min, x_max, y_max])
+            # valid_bbs.append([x_min, y_min, x_max, y_max])
+            valid_bbs.append(np.array([x_min, y_min, x_max, y_max]))
+    valid_bbs = np.array(valid_bbs)
     return valid_bbs
 

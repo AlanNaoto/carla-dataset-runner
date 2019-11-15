@@ -27,6 +27,7 @@ Weather options: {"Default", "ClearNoon", "CloudyNoon", "WetNoon", "WetCloudyNoo
   "SoftRainSunset"
 """
 
+import os
 import sys
 import time
 from CarlaWorld import CarlaWorld
@@ -46,8 +47,9 @@ def timer(total_time):
 if __name__ == "__main__":
     sensor_width = 1024
     sensor_height = 768
-    HDF5_file = HDF5Saver(sensor_width, sensor_height)
+    fov = 110
 
+    HDF5_file = HDF5Saver(sensor_width, sensor_height, os.path.join("data", "carla_dataset.hdf5"))
     # Carla settings
     CarlaWorld = CarlaWorld(HDF5_file=HDF5_file)
     CarlaWorld.set_weather(choice="Default")
@@ -57,12 +59,13 @@ if __name__ == "__main__":
     vehicle = CarlaWorld.spawn_vehicle()
     print('Sleeping so that vehicle doesn\'t begins recording data while floating on the air...')
     timer(2)
-    fov = 110
     CarlaWorld.put_rgb_sensor(vehicle, sensor_width, sensor_height, fov)
     CarlaWorld.put_depth_sensor(vehicle, sensor_width, sensor_height, fov)
     # CarlaWorld.put_semantic_sensor(vehicle, sensor_width, sensor_height, fov)
 
     print('Recording data...')
-    CarlaWorld.begin_data_acquisition(frames_to_record=10, sensor_width=sensor_width, sensor_height=sensor_height)
+    CarlaWorld.begin_data_acquisition(frames_to_record=300, sensor_width=sensor_width, sensor_height=sensor_height)
     CarlaWorld.clean_actor_list()
     HDF5_file.close_HDF5()
+
+    # TODO Check if set autopilot is indeed working!
