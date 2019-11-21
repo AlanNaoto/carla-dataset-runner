@@ -43,7 +43,7 @@ def treat_single_image(rgb_data, bb_vehicles_data, bb_walkers_data, depth_data, 
         cv2.imwrite('filtered_boxed_img.png', rgb_data)
 
     # depth
-    depth_data[depth_data>10] = 0.0
+    depth_data[depth_data==1000] = 0.0
     normalized_depth = cv2.normalize(depth_data, depth_data, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
     normalized_depth = np.stack((normalized_depth,)*3, axis=-1)  # Grayscale into 3 channels
     # normalized_depth = cv2.applyColorMap(normalized_depth, cv2.COLORMAP_HOT)
