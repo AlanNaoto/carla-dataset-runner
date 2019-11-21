@@ -71,3 +71,6 @@ class CarlaSyncMode(object):
             data = sensor_queue.get(timeout=timeout)
             if data.frame == self.frame:
                 return data
+
+    def tick_no_data(self):
+        self.frame = self.world.tick()

@@ -13,14 +13,15 @@ class HDF5Saver:
         self.rgb_group = self.file.create_group("rgb")
         self.depth_group = self.file.create_group("depth")
         self.bounding_box_group = self.file.create_group("bounding_box")
+        self.bb_vehicles_group = self.bounding_box_group.create_group("vehicles")
+        self.bb_walkers_group = self.bounding_box_group.create_group("walkers")
         self.timestamp_group = self.file.create_group("timestamps")
 
         # Storing metadata
         self.file.attrs['sensor_width'] = sensor_width
         self.file.attrs['sensor_height'] = sensor_height
         self.file.attrs['simulation_synchronization_type'] = "syncd"
-        self.bounding_box_group.attrs['data_description'] = 'First row: vehicle. Second row: walker. Each entry in the'\
-                                                            'same row are multiple actors present in the scene.'
+        self.bounding_box_group.attrs['data_description'] = 'Each 4 entries in the same row present one individual actor in the scene.'
         self.bounding_box_group.attrs['bbox_format'] = '[xmin, ymin, xmax, ymax] (top left coords; right bottom coords)' \
                                                        'the vector has been flattened; therefore the data must' \
                                                        'be captured in blocks of 4 elements'
@@ -31,7 +32,8 @@ class HDF5Saver:
         timestamp = str(timestamp)
         self.rgb_group.create_dataset(timestamp, data=rgb_array)
         self.depth_group.create_dataset(timestamp, data=depth_array)
-        self.bounding_box_group.create_dataset(timestamp, data=bounding_box, dtype=self.dt)
+        self.bb_vehicles_group.create_dataset(timestamp, data=bounding_box[0])
+        self.bb_walkers_group.create_dataset(timestamp, data=bounding_box[1])
 
     def record_all_timestamps(self, timestamps_list):
         self.timestamp_group.create_dataset("timestamps", data=np.array(timestamps_list))

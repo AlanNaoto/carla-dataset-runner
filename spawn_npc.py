@@ -148,6 +148,7 @@ class NPCClass:
             # random max speed
             self.all_actors[i].set_max_speed(1 + random.random())    # max speed between 1 and 2 (default is 1.4 m/s)
         print('Spawned %d vehicles and %d walkers' % (len(self.vehicles_list), len(self.walkers_list)))
+        return self.vehicles_list, self.walkers_list
 
     def remove_npcs(self):
         print('Destroying %d NPC vehicles' % len(self.vehicles_list))

@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 
 
-def apply_filters_to_3d_bb(bb_3d_data, depth_array, sensor_width, sensor_height):
+def apply_filters_to_3d_bb(bb_3d_data, depth_array, sensor_width, sensor_height, camera_x_location, camera_y_location):
     # Bounding Box processing
     bb_3d_vehicles = bb_3d_data[0]
     bb_3d_walkers = bb_3d_data[1]
@@ -16,8 +16,8 @@ def apply_filters_to_3d_bb(bb_3d_data, depth_array, sensor_width, sensor_height)
     # print('total walkers on world', len(bb_3d_walkers))
 
     # Depth + bb coordinate check
-    valid_bb_vehicles = proccess_3D_bb_with_depth(bb_3d_vehicles, depth_array, sensor_width, sensor_height)
-    valid_bb_walkers = proccess_3D_bb_with_depth(bb_3d_walkers, depth_array, sensor_width, sensor_height)
+    valid_bb_vehicles = proccess_3D_bb_with_depth(bb_3d_vehicles, depth_array, sensor_width, sensor_height, camera_x_location, camera_y_location)
+    valid_bb_walkers = proccess_3D_bb_with_depth(bb_3d_walkers, depth_array, sensor_width, sensor_height, camera_x_location, camera_y_location)
     valid_bb_vehicles = transform_bb_3d_to_2d(valid_bb_vehicles, sensor_width, sensor_height)
     valid_bb_walkers = transform_bb_3d_to_2d(valid_bb_walkers, sensor_width, sensor_height)
 
@@ -43,15 +43,15 @@ def apply_filters_to_3d_bb(bb_3d_data, depth_array, sensor_width, sensor_height)
     return valid_bbs
 
 
-def proccess_3D_bb_with_depth(bb_3d_actors, depth_array, sensor_width, sensor_height):
+def proccess_3D_bb_with_depth(bb_3d_actors, depth_array, sensor_width, sensor_height, camera_x_location, camera_y_location):
     valid_bbs = []
     for actor in bb_3d_actors:
         actor_bbs = []
         for bb_xyz_point in actor:
             bb_xyz_point = np.squeeze(np.asarray(bb_xyz_point))
-            x = int(bb_xyz_point[0]) - 1  # -1 is accounting for the x=1 position of the camera on the vehicle
-            y = int(bb_xyz_point[1])
-            z = bb_xyz_point[2] - 2  # -2 is accounting for the Z=2 position of the camera on the vehicle
+            x = int(bb_xyz_point[0] - camera_x_location)  # Accounting for the x position of the camera on the vehicle
+            y = int(bb_xyz_point[1] - camera_y_location)
+            z = bb_xyz_point[2]
 
             # These limits stretching are done so that the vehicles' bounding boxes appear whole even if only half of
             # the car is shown
@@ -70,7 +70,7 @@ def proccess_3D_bb_with_depth(bb_3d_actors, depth_array, sensor_width, sensor_he
             if 0 <= x <= sensor_width and 0 <= y <= sensor_height:
                 # Allow for some stretching on the z axis as well (a vehicle could be driving against us and thus get
                 # only half of its body)
-                if -1 <= z < 0:
+                if -1.5 <= z < 0:
                     z = 0
                 # Check if its behind something compared to the depth img (if its in front, i.e. nearer to us, then ok)
                 if 0 <= z <= depth_array[y-1][x-1]:  # y and x on depth array are inverted for some reason

@@ -6,81 +6,10 @@
       <change beforePath="$PROJECT_DIR$/CarlaWorld.py" beforeDir="false" afterPath="$PROJECT_DIR$/CarlaWorld.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HDF5Saver.py" beforeDir="false" afterPath="$PROJECT_DIR$/HDF5Saver.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bb_filter.py" beforeDir="false" afterPath="$PROJECT_DIR$/bb_filter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/check_bb/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/check_bb/.idea/check_bb.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/check_bb/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/check_bb/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/check_bb/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/check_bb/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/check_bb/afiltered_boxed_img.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/check_bb/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172024.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172025.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172026.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172028.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172029.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172030.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172031.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172032.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172033.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172034.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172035.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172036.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb20191107-172037.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172024.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172025.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172027.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172028.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172029.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172030.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172031.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172032.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172033.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172034.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172035.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172036.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bbox/bb_coord20191107-172037.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172024.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172025.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172026.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172028.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172029.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172030.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172031.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172032.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172033.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172034.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172035.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172036.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/depth/depth20191107-172037.npy" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172024.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172025.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172026.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172028.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172029.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172030.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172031.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172032.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172033.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172034.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172035.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172036.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/rgb/rgb20191107-172037.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172024.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172025.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172026.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172027.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172028.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172029.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172030.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172031.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172032.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172033.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172034.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172035.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172036.npz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/semantic/semantic20191107-172037.npz" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/set_synchronous_mode.py" beforeDir="false" afterPath="$PROJECT_DIR$/set_synchronous_mode.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spawn_npc.py" beforeDir="false" afterPath="$PROJECT_DIR$/spawn_npc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/hdf5_check/check_hdf5_file.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/hdf5_check/check_hdf5_file.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -119,8 +48,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.check_hdf5_file (1)">
-    <configuration name="HDF5Saver" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.main">
+    <configuration name="CarlaWorld" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="dataset_collector" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -132,7 +61,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/HDF5Saver.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/CarlaWorld.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -227,11 +156,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.CarlaWorld" />
         <item itemvalue="Python.check_hdf5_file (1)" />
         <item itemvalue="Python.check_hdf5_file" />
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.numpyarraytest" />
-        <item itemvalue="Python.HDF5Saver" />
       </list>
     </recent_temporary>
   </component>

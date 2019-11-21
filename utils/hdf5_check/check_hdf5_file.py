@@ -7,25 +7,27 @@ import sys
 def read_hdf5_test(hdf5_file):
     with h5py.File(hdf5_file, 'r') as file:
         rgb = file['rgb']
-        bb = file['bounding_box']
+        bb_vehicles = file['bounding_box']['vehicles']
+        bb_walkers = file['bounding_box']['walkers']
         depth = file['depth']
         timestamps = file['timestamps']
 
         for time in timestamps['timestamps']:
             rgb_data = np.array(rgb[str(time)])
-            bb_data = np.array(bb[str(time)])
+            bb_vehicles_data = np.array(bb_vehicles[str(time)])
+            bb_walkers_data = np.array(bb_walkers[str(time)])
             depth_data = np.array(depth[str(time)])
-            return rgb_data, bb_data, depth_data
+            return rgb_data, bb_vehicles_data, bb_walkers_data, depth_data
 
 
-def treat_single_image(rgb_data, bb_data, depth_data, save_to_many_single_files=False):
+def treat_single_image(rgb_data, bb_vehicles_data, bb_walkers_data, depth_data, save_to_many_single_files=False):
     # raw rgb
     if save_to_many_single_files:
         cv2.imwrite('raw_img.jpeg', rgb_data)
 
     # bb
-    bb_vehicles = bb_data[0]
-    bb_walkers = bb_data[1]
+    bb_vehicles = bb_vehicles_data
+    bb_walkers = bb_walkers_data
 
     if all(bb_vehicles != -1):
         for bb_idx in range(0, len(bb_vehicles), 4):
@@ -54,24 +56,26 @@ def create_video_sample(hdf5_file):
     with h5py.File(hdf5_file, 'r') as file:
         frame_width = file.attrs['sensor_width']
         frame_height = file.attrs['sensor_height']
-        out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 20, (frame_width*2, frame_height))
+        # out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 20, (frame_width*2, frame_height))
+        out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), 20, (frame_width * 2, frame_height))
         for time_idx, time in enumerate(file['timestamps']['timestamps']):
             rgb_data = np.array(file['rgb'][str(time)])
-            bb_data = np.array(file['bounding_box'][str(time)])
+            bb_vehicles_data = np.array(file['bounding_box']['vehicles'][str(time)])
+            bb_walkers_data = np.array(file['bounding_box']['walkers'][str(time)])
             depth_data = np.array(file['depth'][str(time)])
 
             sys.stdout.write("\r")
             sys.stdout.write('Recording video. Frame {0}/{1}'.format(time_idx, len(file['timestamps']['timestamps'])))
             sys.stdout.flush()
 
-            rgb_frame, depth_frame = treat_single_image(rgb_data, bb_data, depth_data)
+            rgb_frame, depth_frame = treat_single_image(rgb_data, bb_vehicles_data, bb_walkers_data, depth_data)
             composed_frame = np.hstack((rgb_frame, depth_frame))
             out.write(composed_frame)
-
+    print('\nDone.')
 
 if __name__ == "__main__":
-    # rgb_data, bb_data, depth_data = read_hdf5_test("/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/dataset_collector/data/carla_dataset.hdf5")
-    # treat_single_image(rgb_data, bb_data, save_to_many_single_files=True)
+    # rgb_data, bb_data_vehicles, bb_data_walkers, depth_data = read_hdf5_test("/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/dataset_collector/data/carla_dataset.hdf5")
+    # treat_single_image(rgb_data, bb_vehicles_data, bb_walkers_data, save_to_many_single_files=True)
     create_video_sample("/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/dataset_collector/data/carla_dataset.hdf5")
 
 

@@ -2,29 +2,23 @@
 Alan Naoto Tabata
 naoto321@gmail.com
 Created: 14/10/2019
-Updated: 06/11/2019
-
-TODO LIST GENERAL
-ok 1) Create city
-ok 2) Set weather
-ok 3) Spawn cars and pedestrians
-ok 4) Check if transit parameters (traffic lights) work ok
-ok 5) Put RGB camera, depth sensor and bbox sensors
-
-# TODO LIST SPECIFIC
-# [ok] - Fix camera position to not get car hood
-# [ok] - ERASE cyclists and motorcyclists from blueprint creation, since their labeling is not adequate
-# [fix it when dealing with waymo] - Define a smaller image window? -> For convenience, use same size as waymo dataset's rgb images
-# [progress]- Integrate BB code into main code  -> editing HDF5Saver at the  same time
-#   [progress] - Delete creation of numpy bb files (keep semantic for sanity?)
-#   - Generate BB txt file
-# - Generalize code to create iteratively many ambients [prob not?]
+Updated: 20/11/2019
 """
 
 """
-Weather options: {"Default", "ClearNoon", "CloudyNoon", "WetNoon", "WetCloudyNoon", "MidRainyNoon", "HardRainNoon",
- "SoftRainNoon", "ClearSunset", "CloudySunset", "WetSunset", "WetCloudySunset", "MidRainSunset", "HardRainSunset",
-  "SoftRainSunset"
+Plan:
+1000 frames = 8,7 GB
+5000 frames = 43,5 GB
+7000 frames = 60,9 GB
+
+ok 0) Make capture between frames longer than a single frame (maybe skip 30 frames for each frame?)
+ok 1) Change town (7 towns total) -> PERFORM MANUALLY, SAFER TO RECORD!
+ok 2) Change weather (15 weathers total - check which ones are actually good on simulation...)
+ok 3) Make a new ego vehicle spawn every n frames
+TODO
+ok X) Spawn npc actors only once. Put and erase only the sensor objects into different vehicles.
+X) Check which weathers work best for rgb cameras. (Which ones give the most impact/show higher image quality) -> + check night weather by manually doing so
+X) Check if there is a unreal setup which gives better rgb post processing img
 """
 
 import os
@@ -45,27 +39,31 @@ def timer(total_time):
 
 
 if __name__ == "__main__":
-    sensor_width = 1024
-    sensor_height = 768
+    sensor_width = 1920#1024
+    sensor_height = 1080#768
     fov = 110
 
-    HDF5_file = HDF5Saver(sensor_width, sensor_height, os.path.join("data", "carla_dataset.hdf5"))
     # Carla settings
+    print("HDF5 File opened")
+    HDF5_file = HDF5Saver(sensor_width, sensor_height, os.path.join("data", "carla_dataset.hdf5"))
     CarlaWorld = CarlaWorld(HDF5_file=HDF5_file)
-    CarlaWorld.set_weather(choice="Default")
+
+    timestamps = []
+    egos_to_run = 3
+    print('Starting to record data...')
     CarlaWorld.spawn_npcs(number_of_vehicles=150, number_of_walkers=50)
+    for weather_option in CarlaWorld.weather_options:
+        CarlaWorld.set_weather(weather_option)
+        ego_vehicle_iteration = 0
+        while ego_vehicle_iteration < egos_to_run:
+            CarlaWorld.begin_data_acquisition(sensor_width, sensor_height, fov,
+                                             frames_to_record_one_ego=60, timestamps=timestamps,
+                                             egos_to_run=egos_to_run)
+            print('Changing ego vehicle...')
+            ego_vehicle_iteration += 1
 
-    # Spawn EGO vehicle and begin recording data
-    vehicle = CarlaWorld.spawn_vehicle()
-    print('Sleeping so that vehicle doesn\'t begins recording data while floating on the air...')
-    timer(2)
-    CarlaWorld.put_rgb_sensor(vehicle, sensor_width, sensor_height, fov)
-    CarlaWorld.put_depth_sensor(vehicle, sensor_width, sensor_height, fov)
-    # CarlaWorld.put_semantic_sensor(vehicle, sensor_width, sensor_height, fov)
-
-    print('Recording data...')
-    CarlaWorld.begin_data_acquisition(frames_to_record=300, sensor_width=sensor_width, sensor_height=sensor_height)
-    CarlaWorld.clean_actor_list()
+#    CarlaWorld.remove_npcs()
+    print('Finished simulation.')
+    print('Saving timestamps...')
+    CarlaWorld.HDF5_file.record_all_timestamps(timestamps)
     HDF5_file.close_HDF5()
-
-    # TODO Check if set autopilot is indeed working!
