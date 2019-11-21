@@ -8,7 +8,6 @@ class HDF5Saver:
         self.sensor_height = sensor_height
 
         self.file = h5py.File(file_path_to_save, "w")
-        self.dt = h5py.special_dtype(vlen=np.dtype('float64'))
         # Creating groups to store each type of data
         self.rgb_group = self.file.create_group("rgb")
         self.depth_group = self.file.create_group("depth")
@@ -21,6 +20,7 @@ class HDF5Saver:
         self.file.attrs['sensor_width'] = sensor_width
         self.file.attrs['sensor_height'] = sensor_height
         self.file.attrs['simulation_synchronization_type'] = "syncd"
+        self.rgb_group.attrs['channels'] = 'R,G,B, Alpha'
         self.bounding_box_group.attrs['data_description'] = 'Each 4 entries in the same row present one individual actor in the scene.'
         self.bounding_box_group.attrs['bbox_format'] = '[xmin, ymin, xmax, ymax] (top left coords; right bottom coords)' \
                                                        'the vector has been flattened; therefore the data must' \

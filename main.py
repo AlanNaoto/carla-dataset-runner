@@ -16,8 +16,6 @@ ok 1) Change town (7 towns total) -> PERFORM MANUALLY, SAFER TO RECORD!
 ok 2) Change weather (15 weathers total - check which ones are actually good on simulation...)
 ok 3) Make a new ego vehicle spawn every n frames
 TODO
-ok X) Spawn npc actors only once. Put and erase only the sensor objects into different vehicles.
-X) Check which weathers work best for rgb cameras. (Which ones give the most impact/show higher image quality) -> + check night weather by manually doing so
 X) Check if there is a unreal setup which gives better rgb post processing img
 """
 
@@ -41,7 +39,7 @@ def timer(total_time):
 if __name__ == "__main__":
     sensor_width = 1920#1024
     sensor_height = 1080#768
-    fov = 110
+    fov = 90#110
 
     # Carla settings
     print("HDF5 File opened")
@@ -49,7 +47,7 @@ if __name__ == "__main__":
     CarlaWorld = CarlaWorld(HDF5_file=HDF5_file)
 
     timestamps = []
-    egos_to_run = 3
+    egos_to_run = 1
     print('Starting to record data...')
     CarlaWorld.spawn_npcs(number_of_vehicles=150, number_of_walkers=50)
     for weather_option in CarlaWorld.weather_options:
@@ -62,7 +60,7 @@ if __name__ == "__main__":
             print('Changing ego vehicle...')
             ego_vehicle_iteration += 1
 
-#    CarlaWorld.remove_npcs()
+    CarlaWorld.remove_npcs()
     print('Finished simulation.')
     print('Saving timestamps...')
     CarlaWorld.HDF5_file.record_all_timestamps(timestamps)

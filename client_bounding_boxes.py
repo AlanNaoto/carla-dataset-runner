@@ -24,6 +24,7 @@ class ClientSideBoundingBoxes(object):
         bounding_boxes = [ClientSideBoundingBoxes.get_bounding_box(vehicle, camera) for vehicle in vehicles]
         # filter objects behind camera
         bounding_boxes = [bb for bb in bounding_boxes if all(bb[:, 2] > 0)]
+        bounding_boxes = [bb for bb in bounding_boxes]
         return bounding_boxes
 
     @staticmethod

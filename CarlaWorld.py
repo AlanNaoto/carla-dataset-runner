@@ -52,18 +52,20 @@ class CarlaWorld:
         self.NPC = NPCClass()
         self.vehicles_list, _ = self.NPC.create_npcs(number_of_vehicles, number_of_walkers)
 
-    def put_rgb_sensor(self, sensor_width=640, sensor_height=480, fov=110):
+    def put_rgb_sensor(self, vehicle, sensor_width=640, sensor_height=480, fov=110):
         # https://carla.readthedocs.io/en/latest/cameras_and_sensors/
         bp = self.blueprint_library.find('sensor.camera.rgb')
         # bp.set_attribute('enable_postprocess_effects', 'True')  # https://carla.readthedocs.io/en/latest/bp_library/
         bp.set_attribute('image_size_x', f'{sensor_width}')
         bp.set_attribute('image_size_y', f'{sensor_height}')
-        bp.set_attribute('fov', '110')
-        # bp.set_attribute('post_processing', "SceneFinal")  # To get better image quality
+        bp.set_attribute('fov', f'{fov}')
 
         # Adjust sensor relative position to the vehicle
         spawn_point = carla.Transform(carla.Location(x=self.camera_x_location, z=self.camera_z_location))
-        self.rgb_camera = self.world.spawn_actor(bp, spawn_point, attach_to=self.ego_vehicle)
+        self.rgb_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
+        # self.rgb_camera.blur_amount = 0.0
+        # self.rgb_camera.motion_blur_intensity = 0
+        # self.rgb_camera.motion_max_distortion = 0
 
         # Camera calibration
         calibration = np.identity(3)
@@ -72,12 +74,9 @@ class CarlaWorld:
         calibration[0, 0] = calibration[1, 1] = sensor_width / (2.0 * np.tan(fov * np.pi / 360.0))
         self.rgb_camera.calibration = calibration  # Parameter K of the camera
         self.sensors_list.append(self.rgb_camera)
-        # Capture data
-        # self.rgb_camera.listen(lambda img: img.save_to_disk(os.path.join('data', 'rgb', 'rgb{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S")))))
-        # self.rgb_camera.listen(lambda img: self.process_rgb_img(img, sensor_width, sensor_height))
         return self.rgb_camera
 
-    def put_depth_sensor(self, sensor_width=640, sensor_height=480, fov=110):
+    def put_depth_sensor(self, vehicle, sensor_width=640, sensor_height=480, fov=110):
         # https://carla.readthedocs.io/en/latest/cameras_and_sensors/
         bp = self.blueprint_library.find('sensor.camera.depth')
         bp.set_attribute('image_size_x', f'{sensor_width}')
@@ -86,11 +85,8 @@ class CarlaWorld:
 
         # Adjust sensor relative position to the vehicle
         spawn_point = carla.Transform(carla.Location(x=self.camera_x_location, z=self.camera_z_location))
-        self.depth_camera = self.world.spawn_actor(bp, spawn_point, attach_to=self.ego_vehicle)
+        self.depth_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
         self.sensors_list.append(self.depth_camera)
-        # cc = carla.ColorConverter.Depth
-        # self.depth_camera.listen(lambda img: img.save_to_disk(os.path.join('data', 'depth', 'depth{0}.jpeg'.format(time.strftime("%Y%m%d-%H%M%S")))), cc))
-        # self.depth_camera.listen(lambda data: self.save_depth_data(data))
         return self.depth_camera
 
     def process_depth_data(self, data, sensor_width, sensor_height):
@@ -117,7 +113,7 @@ class CarlaWorld:
     def process_rgb_img(self, img, sensor_width, sensor_height):
         img = np.array(img.raw_data)
         img = img.reshape((sensor_height, sensor_width, 4))
-        img = img[:, :, :3]
+        img = img[:, :, :3]  # taking out opacity channel
         bb = self.get_bb_data()
         return img, bb
 
@@ -129,9 +125,10 @@ class CarlaWorld:
     def begin_data_acquisition(self, sensor_width, sensor_height, fov, frames_to_record_one_ego=1, timestamps=[], egos_to_run=10):
         # Changes the ego vehicle to be put the sensor
         current_ego_recorded_frames = 0
-        self.ego_vehicle = self.world.get_actors()[random.choice(self.vehicles_list)]
-        self.put_rgb_sensor(sensor_width, sensor_height, fov)
-        self.put_depth_sensor(sensor_width, sensor_height, fov)
+        # Vehicles 2 and 22 are not considered because the cameras get occluded without changing their absolute position
+        ego_vehicle = self.world.get_actors()[random.choice([x for x in self.vehicles_list if x not in [2, 22]])]
+        self.put_rgb_sensor(ego_vehicle, sensor_width, sensor_height, fov)
+        self.put_depth_sensor(ego_vehicle, sensor_width, sensor_height, fov)
 
         # Begin applying the sync mode
         with CarlaSyncMode(self.world, self.rgb_camera, self.depth_camera, fps=30) as sync_mode:
@@ -145,7 +142,7 @@ class CarlaWorld:
                     print('\n')
                     self.remove_sensors()
                     return timestamps
-                # Advance the simulation and wait for the data.
+                # Advance the simulation and wait for the data
                 # Skip every nth frame for data recording, so that one frame is not that similar to another
                 wait_frame_ticks = 0
                 while wait_frame_ticks < 5:
@@ -156,7 +153,8 @@ class CarlaWorld:
                 # Processing raw data
                 rgb_array, bounding_box = self.process_rgb_img(rgb_data, sensor_width, sensor_height)
                 depth_array = self.process_depth_data(depth_data, sensor_width, sensor_height)
-                bounding_box = apply_filters_to_3d_bb(bounding_box, depth_array, sensor_width, sensor_height, self.camera_x_location, self.camera_y_location)
+                bounding_box = apply_filters_to_3d_bb(bounding_box, depth_array, sensor_width, sensor_height,
+                                                      self.camera_x_location, self.camera_y_location, self.camera_z_location)
                 timestamp = round(time.time() * 1000.0)
 
                 # Saving into opened HDF5 dataset file

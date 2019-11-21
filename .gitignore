@@ -3,7 +3,7 @@
 *.jpeg
 *.png
 *.job
-
+__pycache__
 
 
 
