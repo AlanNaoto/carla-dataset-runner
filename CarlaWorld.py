@@ -63,9 +63,9 @@ class CarlaWorld:
         # Adjust sensor relative position to the vehicle
         spawn_point = carla.Transform(carla.Location(x=self.camera_x_location, z=self.camera_z_location))
         self.rgb_camera = self.world.spawn_actor(bp, spawn_point, attach_to=vehicle)
-        # self.rgb_camera.blur_amount = 0.0
-        # self.rgb_camera.motion_blur_intensity = 0
-        # self.rgb_camera.motion_max_distortion = 0
+        self.rgb_camera.blur_amount = 0.0
+        self.rgb_camera.motion_blur_intensity = 0
+        self.rgb_camera.motion_max_distortion = 0
 
         # Camera calibration
         calibration = np.identity(3)
@@ -125,8 +125,9 @@ class CarlaWorld:
     def begin_data_acquisition(self, sensor_width, sensor_height, fov, frames_to_record_one_ego=1, timestamps=[], egos_to_run=10):
         # Changes the ego vehicle to be put the sensor
         current_ego_recorded_frames = 0
-        # Vehicles 2 and 22 are not considered because the cameras get occluded without changing their absolute position
-        ego_vehicle = self.world.get_actors()[random.choice([x for x in self.vehicles_list if x not in [2, 22]])]
+        # These vehicles are not considered because the cameras get occluded without changing their absolute position
+        ego_vehicle = random.choice([x for x in self.world.get_actors().filter("vehicle.*") if x.type_id not in
+                                     ['vehicle.audi.tt', 'vehicle.carlamotors.carlacola', 'vehicle.volkswagen.t2']])
         self.put_rgb_sensor(ego_vehicle, sensor_width, sensor_height, fov)
         self.put_depth_sensor(ego_vehicle, sensor_width, sensor_height, fov)
 
