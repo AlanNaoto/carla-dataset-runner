@@ -3,7 +3,8 @@
 *.jpeg
 *.png
 *.job
-__pycache__
+*.idea
+__pycache__/*
 
 
 
