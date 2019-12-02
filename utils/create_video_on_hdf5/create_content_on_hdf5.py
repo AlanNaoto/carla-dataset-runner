@@ -52,12 +52,14 @@ def treat_single_image(rgb_data, bb_vehicles_data, bb_walkers_data, depth_data, 
     return rgb_data, normalized_depth
 
 
-def create_video_sample(hdf5_file):
+def create_video_sample(hdf5_file, show_depth=True):
     with h5py.File(hdf5_file, 'r') as file:
         frame_width = file.attrs['sensor_width']
         frame_height = file.attrs['sensor_height']
-        # out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 20, (frame_width*2, frame_height))
-        out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), 20, (frame_width * 2, frame_height))
+        if show_depth:
+            frame_width = frame_width * 2
+        out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc('m', 'p', '4', 'v'), 20, (frame_width, frame_height))
+
         for time_idx, time in enumerate(file['timestamps']['timestamps']):
             rgb_data = np.array(file['rgb'][str(time)])
             bb_vehicles_data = np.array(file['bounding_box']['vehicles'][str(time)])
@@ -67,9 +69,11 @@ def create_video_sample(hdf5_file):
             sys.stdout.write("\r")
             sys.stdout.write('Recording video. Frame {0}/{1}'.format(time_idx, len(file['timestamps']['timestamps'])))
             sys.stdout.flush()
-
             rgb_frame, depth_frame = treat_single_image(rgb_data, bb_vehicles_data, bb_walkers_data, depth_data)
-            composed_frame = np.hstack((rgb_frame, depth_frame))
+            if show_depth:
+                composed_frame = np.hstack((rgb_frame, depth_frame))
+            else:
+                composed_frame = rgb_frame                
             out.write(composed_frame)
     print('\nDone.')
 
@@ -77,7 +81,9 @@ def create_video_sample(hdf5_file):
 if __name__ == "__main__":
     # rgb_data, bb_data_vehicles, bb_data_walkers, depth_data = read_hdf5_test("/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/dataset_collector/data/carla_dataset.hdf5")
     # treat_single_image(rgb_data, bb_data_vehicles, bb_data_walkers, depth_data, save_to_many_single_files=True)
-    create_video_sample("/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/carla-dataset-runner/data/carla_dataset.hdf5")
+    create_video_sample(
+        "/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/carla-dataset-runner/data/carla_dataset.hdf5", 
+        show_depth=False)
 
 
 

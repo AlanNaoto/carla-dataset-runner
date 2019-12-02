@@ -37,6 +37,7 @@ def proccess_3D_bb_with_depth(bb_3d_actors, depth_array, sensor_width, sensor_he
         boxes_x_points = actor[:, 0] - camera_x_location
         boxes_y_points = actor[:, 1] - camera_y_location
         boxes_z_points = actor[:, 2] - camera_z_location
+        maximum_box_size = (abs(max(boxes_x_points) - min(boxes_x_points)) * (abs(max(boxes_y_points) - min(boxes_y_points))))
         # Check if at least one distance point is in front of the vehicle
         if any(z >= 0 for z in boxes_z_points):
             good_boxes_x_points = []
@@ -69,10 +70,11 @@ def proccess_3D_bb_with_depth(bb_3d_actors, depth_array, sensor_width, sensor_he
             x_max = max(good_boxes_x_points)
             y_max = max(good_boxes_y_points)
 
-            # Avoiding to get very small bounding boxes
+            # Avoiding to get very small bounding boxes by comparing 3E-4, a value found by observation
+            # Also checks for very small boxes, when compared with the original maximum ones
             box_size = (x_max-x_min) * (y_max-y_min)
-            img_size = sensor_height*sensor_width
-            if (box_size / img_size) > 3E-4:  # 3E-4 was a value found by observation
+            img_size = sensor_height*sensor_width            
+            if ((box_size / img_size) > 3E-4) and (box_size/maximum_box_size > 0.50):
                 actor_bbs.append(np.array([x_min, y_min, x_max, y_max]))
         # If for that actor there are no valid bbs, then I am skipping him
         actor_bbs = np.array(actor_bbs)

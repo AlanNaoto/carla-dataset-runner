@@ -8,8 +8,8 @@
 import sys
 import os
 MAIN_DIR = os.path.dirname(os.path.abspath(__file__))
-CARLA_DIR = os.path.join(os.path.dirname(MAIN_DIR), 'CARLA_0.9.6')
-CARLA_EGG_PATH = os.path.join(CARLA_DIR, 'PythonAPI', 'carla', 'dist', 'carla-0.9.6-py3.5-linux-x86_64.egg')
+CARLA_DIR = os.path.join(os.path.dirname(MAIN_DIR), 'carla')
+CARLA_EGG_PATH = os.path.join(CARLA_DIR, 'PythonAPI', 'carla', 'dist', 'carla-0.9.6-py3.6-linux-x86_64.egg')
 sys.path.append(CARLA_EGG_PATH)
 import carla
 import random
