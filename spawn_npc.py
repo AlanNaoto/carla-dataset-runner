@@ -10,12 +10,8 @@
 import glob
 import os
 import sys
-
-MAIN_DIR = os.path.dirname(os.path.abspath(__file__))
-CARLA_DIR = os.path.join(os.path.dirname(MAIN_DIR), 'carla')
-CARLA_EGG_PATH = os.path.join(CARLA_DIR, 'PythonAPI', 'carla', 'dist', 'carla-0.9.6-py3.6-linux-x86_64.egg')
+CARLA_EGG_PATH = "/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/carla/PythonAPI/carla/dist/carla-0.9.6-py3.6-linux-x86_64.egg"
 sys.path.append(CARLA_EGG_PATH)
-
 import carla
 import logging
 import random
@@ -33,7 +29,7 @@ class NPCClass:
     def create_npcs(self, number_of_vehicles=150, number_of_walkers=70):
         world = self.client.get_world()
         blueprints = world.get_blueprint_library().filter('vehicle.*')
-        blueprints = [x for x in blueprints if not x.id.endswith('prius')]  # This guy has a wonky movement [physics broken?]
+        blueprints = [x for x in blueprints if not x.id.endswith('etron')]  # This guy has a wonky movement [physics broken?]
         blueprintsWalkers = world.get_blueprint_library().filter('walker.pedestrian.*')
 
         spawn_points = world.get_map().get_spawn_points()
@@ -61,7 +57,6 @@ class NPCClass:
             blueprint = random.choice(blueprints)
             # Taking out bicycles and motorcycles, since the semantic/bb labeling for that is mixed with pedestrian
             if int(blueprint.get_attribute('number_of_wheels')) > 2:
-                print('blueprint.get_attribute(\'number_of_wheels\')', blueprint.get_attribute('number_of_wheels'))
                 if blueprint.has_attribute('color'):
                     color = random.choice(blueprint.get_attribute('color').recommended_values)
                     blueprint.set_attribute('color', color)

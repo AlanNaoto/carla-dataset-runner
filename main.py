@@ -2,39 +2,33 @@
 Alan Naoto Tabata
 naoto321@gmail.com
 Created: 14/10/2019
-"""
 
-"""
-Plan:
-1000 frames = 8,7 GB
-5000 frames = 43,5 GB
-7000 frames = 60,9 GB
+Plan
+200 frames = 1,7 GB
+Total: 20.000 frames = 170 GB
+5 Towns
+5 Weathers
+x frames per ego vehicle
+y amount of ego vehicles
 
-ok 0) Make capture between frames longer than a single frame (maybe skip 30 frames for each frame?)
-ok 1) Change town (7 towns total) -> PERFORM MANUALLY, SAFER TO RECORD!
-ok 2) Change weather (15 weathers total - check which ones are actually good on simulation...)
-ok 3) Make a new ego vehicle spawn every n frames
-TODO
-X) Check if there is a unreal setup which gives better rgb post processing img
+Frames per town = x * y * 5
+20.000 / 5 towns = x * y * 5
+x * y = 800
+if x = 60 frames per ego, then
+60 * y = 800
+y = 13 egos
 
-Town01
-150 vehicles
-100 pedestrians
+i.e., 13 egos * 60 frames * 5 weathers = 3900 frames per town
+13900 * 5 towns = 19500 frames total
 
-Town02 - Small city? Different buildings
-90 vehicles
-100 pedestrians
+19500 frames ~= 165.75 GB
 
-Town03
-Bugado
+Town01 - 150 vehic 200 walk
+Town02 - 100 vehic 100 walk
+Town03 - 200 vehic 150 walk
+Town04 - 250 vehic 100 walk
+Town05 - 300 vehic 200 walk
 
-Town04 - Highwaylike + small city nearby
-350 vehicles
-150 pedestrians
-
-Town05 - City with higher buildings
-150 vehicles
-200 pedestrians
 
 """
 
@@ -43,6 +37,8 @@ import sys
 import time
 from CarlaWorld import CarlaWorld
 from HDF5Saver import HDF5Saver
+from utils.create_video_on_hdf5.create_content_on_hdf5 import read_hdf5_test, treat_single_image, create_video_sample
+
 
 
 def timer(total_time):
@@ -62,20 +58,21 @@ if __name__ == "__main__":
     fov = 90
 
     # Carla settings
+    hdf5_file = "carla_dataset_town02.hdf5"
     print("HDF5 File opened")
-    HDF5_file = HDF5Saver(sensor_width, sensor_height, os.path.join("data", "carla_dataset.hdf5"))
-    CarlaWorld = CarlaWorld(HDF5_file=HDF5_file, town_name="Town01")
+    HDF5_file = HDF5Saver(sensor_width, sensor_height, os.path.join("data", hdf5_file))
+    CarlaWorld = CarlaWorld(HDF5_file=HDF5_file, town_name=None)
 
     timestamps = []
-    egos_to_run = 2
+    egos_to_run = 13
     print('Starting to record data...')
-    CarlaWorld.spawn_npcs(number_of_vehicles=200, number_of_walkers=150)
+    CarlaWorld.spawn_npcs(number_of_vehicles=100, number_of_walkers=200)
     for weather_option in CarlaWorld.weather_options:
         CarlaWorld.set_weather(weather_option)
         ego_vehicle_iteration = 0
         while ego_vehicle_iteration < egos_to_run:
             CarlaWorld.begin_data_acquisition(sensor_width, sensor_height, fov,
-                                             frames_to_record_one_ego=20, timestamps=timestamps,
+                                             frames_to_record_one_ego=60, timestamps=timestamps,
                                              egos_to_run=egos_to_run)
             print('Setting another vehicle as EGO.')
             ego_vehicle_iteration += 1
@@ -86,9 +83,5 @@ if __name__ == "__main__":
     CarlaWorld.HDF5_file.record_all_timestamps(timestamps)
     HDF5_file.close_HDF5()
 
-    from utils.create_video_on_hdf5.create_content_on_hdf5 import read_hdf5_test, treat_single_image, create_video_sample
-    #rgb_data, bb_data_vehicles, bb_data_walkers, depth_data = read_hdf5_test("/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/carla-dataset-runner/data/carla_dataset.hdf5")
-    #treat_single_image(rgb_data, bb_data_vehicles, bb_data_walkers, depth_data, save_to_many_single_files=True)
-    create_video_sample(
-        "/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/carla-dataset-runner/data/carla_dataset.hdf5",
-        show_depth=False)
+    # Only for visualization purposes
+    create_video_sample(os.path.join('data', hdf5_file), show_depth=False)

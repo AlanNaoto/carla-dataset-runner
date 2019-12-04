@@ -1,11 +1,7 @@
 import sys
 import os
-
-MAIN_DIR = os.path.dirname(os.path.abspath(__file__))
-CARLA_DIR = os.path.join(os.path.dirname(MAIN_DIR), 'carla')
-CARLA_EGG_PATH = os.path.join(CARLA_DIR, 'PythonAPI', 'carla', 'dist', 'carla-0.9.6-py3.6-linux-x86_64.egg')
+CARLA_EGG_PATH = "/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/carla/PythonAPI/carla/dist/carla-0.9.6-py3.6-linux-x86_64.egg"
 sys.path.append(CARLA_EGG_PATH)
-
 import carla
 import random
 import time
@@ -24,8 +20,8 @@ class CarlaWorld:
         # Carla initialization
         client = carla.Client('localhost', 2000)
         client.set_timeout(20.0)
-        self.world = client.load_world(town_name)
-        #self.world = client.get_world()
+        #self.world = client.load_world(town_name)
+        self.world = client.get_world()
         print('Successfully connected to CARLA')
         self.blueprint_library = self.world.get_blueprint_library()
         # Sensors stuff

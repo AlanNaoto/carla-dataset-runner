@@ -4,14 +4,11 @@
     <list default="true" id="a41a94bc-a677-4b27-9044-cbb0c43d576e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CarlaWorld.py" beforeDir="false" afterPath="$PROJECT_DIR$/CarlaWorld.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WeatherSelector.py" beforeDir="false" afterPath="$PROJECT_DIR$/WeatherSelector.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client_bounding_boxes.py" beforeDir="false" afterPath="$PROJECT_DIR$/client_bounding_boxes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/set_synchronous_mode.py" beforeDir="false" afterPath="$PROJECT_DIR$/set_synchronous_mode.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spawn_npc.py" beforeDir="false" afterPath="$PROJECT_DIR$/spawn_npc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/hdf5_check/check_hdf5_file.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/create_video_on_hdf5/create_content_on_hdf5.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/create_video_on_hdf5/create_content_on_hdf5.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/spawn_single_npc_test/spawn_desired_car.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/spawn_single_npc_test/spawn_desired_car.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -29,24 +26,17 @@
   </component>
   <component name="ProjectId" id="1SBlCkFBsI1num67FBw1HPPOBnX" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/utils/check_vehicle_model_on_world" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunManager" selected="Python.spawn_desired_car">
     <configuration name="CarlaWorld" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -164,6 +154,18 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -216,6 +218,12 @@
     <MESSAGE value="Fixed file namesaving format for computer local timestamp.&#10;FIxed depth information file save type to numpy array." />
     <MESSAGE value="Implemented scratch of bounding box ground truth generation via RGB &#10;cameras. Set simulation mode to synchronous" />
     <option name="LAST_COMMIT_MESSAGE" value="Implemented scratch of bounding box ground truth generation via RGB &#10;cameras. Set simulation mode to synchronous" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="482" y="187" key="SettingsEditor" timestamp="1575362968256">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="482" y="187" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1575362968256" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

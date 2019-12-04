@@ -71,3 +71,17 @@ class WeatherSelector:
         return [self.cloudiness, self.precipitation, self.precipitation_deposits, self.wind_intensity,
                 self.sun_azimuth_angle, self.sun_altitude_angle]
 
+if __name__ == "__main__":
+    # Carla initialization
+    client = carla.Client('localhost', 2000)
+    client.set_timeout(10.0)
+    world = client.get_world()
+    print('Successfully connected to CARLA')
+
+    Weathers = WeatherSelector()
+    weather_option = Weathers.almost_night()    
+    weather = carla.WeatherParameters(*weather_option)
+    world.set_weather(weather)
+    print(world.get_weather())
+    print('Changed weather.')
+
