@@ -4,7 +4,8 @@
 *.png
 *.job
 *.idea
-__pycache__/*
-
+*.pyc
+__pycache__/
+data/
 
 
