@@ -86,4 +86,4 @@ if __name__ == "__main__":
 
     # For later visualization
     if args.video:
-        create_video_sample(os.path.join('data', args.hdf5_file), show_depth=args.show_depth)
+        create_video_sample(os.path.join('data', args.hdf5_file + ".hdf5"), show_depth=args.depth)
