@@ -5,6 +5,7 @@ Script used for collecting data on CARLA version 0.9.6. This repository was crea
 Types of data captured include RGB, depth and bounding box of vehicles and pedestrians collection. Other types of data (semantic segmentation, lidar, ...) are not yet implemented, but could be by following the same data structure. Here is a sample of the collected data on Town02:
 
 ![town02_sample](new_vids/town02_sample.gif)
+
 https://www.youtube.com/watch?v=LgSwWo82wC0
 
 https://www.youtube.com/watch?v=BWh3IdWkFcA
