@@ -6,6 +6,7 @@ Types of data captured include RGB, depth and bounding box of vehicles and pedes
 
 ![town02_sample](new_vids/town02_sample.gif)
 https://www.youtube.com/watch?v=LgSwWo82wC0
+
 https://www.youtube.com/watch?v=BWh3IdWkFcA
 
 Do note that car light lamps and pole lamps assets were added manually on my own carla source compiled version and thus at the moment are not present on neither the precompiled nor the built from source carla version.
