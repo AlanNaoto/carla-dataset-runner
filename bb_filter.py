@@ -2,7 +2,6 @@
 Alan Naoto Tabata
 naoto321@gmail.com
 Created: 04/11/2019
-Updated: 14/11/2019
 """
 import cv2
 import numpy as np

@@ -153,12 +153,14 @@ class CarlaWorld:
                 # Processing raw data
                 rgb_array, bounding_box = self.process_rgb_img(rgb_data, sensor_width, sensor_height)
                 depth_array = self.process_depth_data(depth_data, sensor_width, sensor_height)
-                bounding_box = apply_filters_to_3d_bb(bounding_box, depth_array, sensor_width, sensor_height,
-                                                      self.camera_x_location, self.camera_y_location, self.camera_z_location)
+                ego_speed = ego_vehicle.get_velocity()
+                ego_speed = np.array([ego_speed.x, ego_speed.y, ego_speed.z])
+                #bounding_box = apply_filters_to_3d_bb(bounding_box, depth_array, sensor_width, sensor_height,
+                #                                      self.camera_x_location, self.camera_y_location, self.camera_z_location)
                 timestamp = round(time.time() * 1000.0)
 
                 # Saving into opened HDF5 dataset file
-                self.HDF5_file.record_data(rgb_array, depth_array, bounding_box, timestamp)
+                self.HDF5_file.record_data(rgb_array, depth_array, bounding_box, ego_speed, timestamp)
                 current_ego_recorded_frames += 1
                 self.total_recorded_frames += 1
                 timestamps.append(timestamp)

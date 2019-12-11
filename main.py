@@ -77,7 +77,7 @@ if __name__ == "__main__":
                                              egos_to_run=egos_to_run)
             print('Setting another vehicle as EGO.')
             ego_vehicle_iteration += 1
-
+        
     CarlaWorld.remove_npcs()
     print('Finished simulation.')
     print('Saving timestamps...')
