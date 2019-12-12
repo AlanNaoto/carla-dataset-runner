@@ -27,7 +27,7 @@ Town01 - 150 vehic 200 walk
 Town02 - 50 vehic 100 walk
 Town03 - 200 vehic 150 walk
 Town04 - 250 vehic 100 walk
-Town05 - 300 vehic 200 walk
+Town05 - 150 vehic 150 walk
 """
 
 import argparse
