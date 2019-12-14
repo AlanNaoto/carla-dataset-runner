@@ -1,33 +1,11 @@
-"""
-Alan Naoto
-Created: 04/11/2019
-"""
-import numbers
 import numpy as np
 
-
-def apply_filters_to_3d_bb(bb_3d_data, depth_array, sensor_width, sensor_height):
-    # Bounding Box processing
-    bb_3d_vehicles = bb_3d_data[0]
-    bb_3d_walkers = bb_3d_data[1]
-
-    # Depth + bb coordinate check
-    valid_bb_vehicles = filter_bounding_boxes(bb_3d_vehicles, depth_array, sensor_width, sensor_height, actor='vehicle')
-    valid_bb_walkers = filter_bounding_boxes(bb_3d_walkers, depth_array, sensor_width, sensor_height, actor='walker')
-
-    # Transform to np array for later easier saving
-    if valid_bb_vehicles.size == 0:
-        valid_bb_vehicles = np.asarray([-1, -1, -1, -1])
-    if valid_bb_walkers.size == 0:
-        valid_bb_walkers = np.asarray([-1, -1, -1, -1])
-    valid_bbs = np.asarray([valid_bb_vehicles.ravel(), valid_bb_walkers.ravel()])  # Flattening the arrays
-    return valid_bbs
-
-
-def filter_bounding_boxes(bb_data, depth_data, frame_width, frame_height, actor):
+def filter_bounding_boxes(rgb_data, bb_data, depth_data, actor):
     good_bounding_boxes = []
-    bb_data = np.array(bb_data)
     depth_data = np.transpose(depth_data)
+    frame_width = 1024
+    frame_height = 768
+
     assert actor=="vehicle" or actor=="walker"
     if actor == "vehicle":
         bounds = [-0.40*frame_width, 1.40*frame_width, -0.40*frame_height, 1.40*frame_height]
@@ -50,12 +28,54 @@ def filter_bounding_boxes(bb_data, depth_data, frame_width, frame_height, actor)
                 tightened_bb_area = (xmax - xmin) * (ymax - ymin)
                 tightened_bb_proportion = tightened_bb_area/max_2d_area
                 tightened_bb_size_to_img = tightened_bb_area/(frame_height*frame_width)
-                if tightened_bb_size_to_img > 2.5E-4:  # Experimental value
+                if tightened_bb_size_to_img > 2.5E-4:
+                    # colormap = {'3or4': (0, 255, 0), '2': (255, 0, 0), "1": (0, 0, 255), "0": (255, 255, 255)}
+                    # cv2.rectangle(rgb_data, (xmin, ymin), (xmax, ymax), colormap[visible_points], 1)
                     good_bounding_boxes.append([xmin, ymin, xmax, ymax, visible_points])
 
     # Check if there is too much intersection over union between bounding boxes
     good_bounding_boxes = remove_bbs_too_much_IOU(good_bounding_boxes)
     return good_bounding_boxes
+
+
+def remove_bbs_too_much_IOU(bounding_boxes):
+    bounding_boxes = np.array([x[:-1] for x in bounding_boxes])  # Removing the color index
+    # If two bbs are overlapping too much, then we make a new bbox which takes the max size of the 
+    # union of both boxes
+    if len(bounding_boxes) > 2:
+        there_are_overlapping_boxes = True
+        while there_are_overlapping_boxes:
+            there_are_overlapping_boxes = False
+            bb_idx = 0
+            while bb_idx < len(bounding_boxes):
+                bb_ref = bounding_boxes[bb_idx]
+                bb_compared_idx = bb_idx + 1
+                while bb_compared_idx < len(bounding_boxes):
+                    bb_compared = bounding_boxes[bb_compared_idx]
+                    # Compute intersection - Min of the maxes; max of the mins
+                    xmax = min(bb_ref[2], bb_compared[2])
+                    xmin = max(bb_ref[0], bb_compared[0])
+                    ymin = max(bb_ref[1], bb_compared[1])
+                    ymax = min(bb_ref[3], bb_compared[3])
+                    # Check if there is intersection between the bbs
+                    if (xmax-xmin) > 0 and (ymax-ymin) > 0:
+                        intersection_area = (xmax - xmin + 1) * (ymax - ymin + 1)
+                        bb_ref_area = (bb_ref[2] - bb_ref[0] + 1) * (bb_ref[3] - bb_ref[1] + 1)
+                        bb_compared_area = (bb_compared[2] - bb_compared[0] + 1) * (bb_compared[3] - bb_compared[1] + 1)
+                        IoU = intersection_area / (bb_compared_area + bb_ref_area - intersection_area)
+                        if IoU > 0.90:
+                            there_are_overlapping_boxes = True
+                            xmin = min(bb_compared[0], bb_ref[0])
+                            ymin = min(bb_compared[1], bb_ref[1])
+                            xmax = max(bb_compared[2], bb_ref[2])
+                            ymax = max(bb_compared[3], bb_ref[3])
+                            bounding_boxes[bb_idx] = [xmin, ymin, xmax, ymax]
+                            bounding_boxes = np.delete(bounding_boxes, (bb_compared_idx), axis=0)
+
+                    bb_compared_idx += 1
+                bb_idx += 1
+
+    return bounding_boxes
 
 
 def adjust_points_to_img_size(width, height, bb_3d_points):
@@ -220,43 +240,3 @@ def compute_bb_coords(possible_bb_3d_points):
     xmax = int(max(possible_bb_3d_points[:, 0]))
     ymax = int(max(possible_bb_3d_points[:, 1]))
     return xmin, ymin, xmax, ymax
-
-
-def remove_bbs_too_much_IOU(bounding_boxes):
-    bounding_boxes = np.array([x[:-1] for x in bounding_boxes])  # Removing the color index
-    # If two bbs are overlapping too much, then we make a new bbox which takes the max size of the 
-    # union of both boxes
-    if len(bounding_boxes) > 2:
-        there_are_overlapping_boxes = True
-        while there_are_overlapping_boxes:
-            there_are_overlapping_boxes = False
-            bb_idx = 0
-            while bb_idx < len(bounding_boxes):
-                bb_ref = bounding_boxes[bb_idx]
-                bb_compared_idx = bb_idx + 1
-                while bb_compared_idx < len(bounding_boxes):
-                    bb_compared = bounding_boxes[bb_compared_idx]
-                    # Compute intersection - Min of the maxes; max of the mins
-                    xmax = min(bb_ref[2], bb_compared[2])
-                    xmin = max(bb_ref[0], bb_compared[0])
-                    ymin = max(bb_ref[1], bb_compared[1])
-                    ymax = min(bb_ref[3], bb_compared[3])
-                    # Check if there is intersection between the bbs
-                    if (xmax-xmin) > 0 and (ymax-ymin) > 0:
-                        intersection_area = (xmax - xmin + 1) * (ymax - ymin + 1)
-                        bb_ref_area = (bb_ref[2] - bb_ref[0] + 1) * (bb_ref[3] - bb_ref[1] + 1)
-                        bb_compared_area = (bb_compared[2] - bb_compared[0] + 1) * (bb_compared[3] - bb_compared[1] + 1)
-                        IoU = intersection_area / (bb_compared_area + bb_ref_area - intersection_area)
-                        if IoU > 0.90:  # Remove both bbs and get a new, bigger one
-                            there_are_overlapping_boxes = True
-                            xmin = min(bb_compared[0], bb_ref[0])
-                            ymin = min(bb_compared[1], bb_ref[1])
-                            xmax = max(bb_compared[2], bb_ref[2])
-                            ymax = max(bb_compared[3], bb_ref[3])
-                            bounding_boxes[bb_idx] = [xmin, ymin, xmax, ymax]
-                            bounding_boxes = np.delete(bounding_boxes, (bb_compared_idx), axis=0)
-
-                    bb_compared_idx += 1
-                bb_idx += 1
-
-    return bounding_boxes

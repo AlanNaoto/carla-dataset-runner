@@ -1,6 +1,5 @@
 """
-Alan Naoto Tabata
-naoto321@gmail.com
+Alan Naoto
 Created: 14/10/2019
 
 Dataset creation plan
@@ -23,11 +22,11 @@ i.e., 13 egos * 60 frames * 5 weathers = 3900 frames per town
 19500 frames ~= 165.75 GB
 
 Suggested amount of vehicles and walkers so that traffic jam occurence is minimized
-Town01 - 150 vehic 200 walk
+Town01 - 100 vehic 200 walk
 Town02 - 50 vehic 100 walk
 Town03 - 200 vehic 150 walk
 Town04 - 250 vehic 100 walk
-Town05 - 300 vehic 200 walk
+Town05 - 150 vehic 150 walk
 """
 
 import argparse
@@ -62,7 +61,7 @@ if __name__ == "__main__":
     # Beginning data capture proccedure
     HDF5_file = HDF5Saver(sensor_width, sensor_height, os.path.join("data", args.hdf5_file + ".hdf5"))
     print("HDF5 File opened")
-    CarlaWorld = CarlaWorld(HDF5_file=HDF5_file, town_name=None)
+    CarlaWorld = CarlaWorld(HDF5_file=HDF5_file)
 
     timestamps = []
     egos_to_run = 13
@@ -73,7 +72,7 @@ if __name__ == "__main__":
         ego_vehicle_iteration = 0
         while ego_vehicle_iteration < egos_to_run:
             CarlaWorld.begin_data_acquisition(sensor_width, sensor_height, fov,
-                                             frames_to_record_one_ego=60, timestamps=timestamps,
+                                             frames_to_record_one_ego=2, timestamps=timestamps,
                                              egos_to_run=egos_to_run)
             print('Setting another vehicle as EGO.')
             ego_vehicle_iteration += 1

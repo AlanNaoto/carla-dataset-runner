@@ -74,7 +74,10 @@ def create_video_sample(hdf5_file, show_depth=True):
                 composed_frame = np.hstack((rgb_frame, depth_frame))
             else:
                 composed_frame = rgb_frame                
+            cv2.putText(composed_frame, 'timestamp', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(composed_frame, str(time), (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             out.write(composed_frame)
+
     print('\nDone.')
 
 
@@ -82,7 +85,7 @@ if __name__ == "__main__":
     # rgb_data, bb_data_vehicles, bb_data_walkers, depth_data = read_hdf5_test("/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/dataset_collector/data/carla_dataset.hdf5")
     # treat_single_image(rgb_data, bb_data_vehicles, bb_data_walkers, depth_data, save_to_many_single_files=True)
     create_video_sample(
-        "/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/carla-dataset-runner/data/town04.hdf5", 
+        "/mnt/6EFE2115FE20D75D/Naoto/UFPR/Mestrado/9_Code/CARLA_UNREAL/Dataset/2_cleaning_data/data/carla_dataset.hdf5", 
         show_depth=False)
 
 
