@@ -1,5 +1,82 @@
 import numpy as np
 
+def filter_bounding_boxes(rgb_data, bb_data, depth_data, actor):
+    good_bounding_boxes = []
+    depth_data = np.transpose(depth_data)
+    frame_width = 1024
+    frame_height = 768
+
+    assert actor=="vehicle" or actor=="walker"
+    if actor == "vehicle":
+        bounds = [-0.40*frame_width, 1.40*frame_width, -0.40*frame_height, 1.40*frame_height]
+    elif actor == "walker":
+        bounds = [0, frame_width, 0, frame_height]
+
+    for actor_bb_3d in bb_data:
+        # Apply some medium constraining on the data to not exclude every impossible point
+        possible_bb_3d_points = np.array([x for x in actor_bb_3d if 
+                                        bounds[0] <= x[0] <= bounds[1] and bounds[2] <= x[1] <= bounds[3]])
+        if len(possible_bb_3d_points) < 2:  # You can't have a box with only one point!
+            continue
+        # Transform out of boundaries points into possible points
+        possible_bb_3d_points = adjust_points_to_img_size(frame_width, frame_height, possible_bb_3d_points)
+        possible_bb_3d_points, bbox_exists, max_2d_area = get_4_points_max_2d_area(possible_bb_3d_points)
+
+        if bbox_exists:
+            xmin, ymin, xmax, ymax, visible_points = tighten_bbox_points(possible_bb_3d_points, depth_data)
+            if all([isinstance(x, numbers.Number) for x in [xmin, ymin, xmax, ymax]]):
+                tightened_bb_area = (xmax - xmin) * (ymax - ymin)
+                tightened_bb_proportion = tightened_bb_area/max_2d_area
+                tightened_bb_size_to_img = tightened_bb_area/(frame_height*frame_width)
+                if tightened_bb_size_to_img > 2.5E-4:
+                    # colormap = {'3or4': (0, 255, 0), '2': (255, 0, 0), "1": (0, 0, 255), "0": (255, 255, 255)}
+                    # cv2.rectangle(rgb_data, (xmin, ymin), (xmax, ymax), colormap[visible_points], 1)
+                    good_bounding_boxes.append([xmin, ymin, xmax, ymax, visible_points])
+
+    # Check if there is too much intersection over union between bounding boxes
+    good_bounding_boxes = remove_bbs_too_much_IOU(good_bounding_boxes)
+    return good_bounding_boxes
+
+
+def remove_bbs_too_much_IOU(bounding_boxes):
+    bounding_boxes = np.array([x[:-1] for x in bounding_boxes])  # Removing the color index
+    # If two bbs are overlapping too much, then we make a new bbox which takes the max size of the 
+    # union of both boxes
+    if len(bounding_boxes) > 2:
+        there_are_overlapping_boxes = True
+        while there_are_overlapping_boxes:
+            there_are_overlapping_boxes = False
+            bb_idx = 0
+            while bb_idx < len(bounding_boxes):
+                bb_ref = bounding_boxes[bb_idx]
+                bb_compared_idx = bb_idx + 1
+                while bb_compared_idx < len(bounding_boxes):
+                    bb_compared = bounding_boxes[bb_compared_idx]
+                    # Compute intersection - Min of the maxes; max of the mins
+                    xmax = min(bb_ref[2], bb_compared[2])
+                    xmin = max(bb_ref[0], bb_compared[0])
+                    ymin = max(bb_ref[1], bb_compared[1])
+                    ymax = min(bb_ref[3], bb_compared[3])
+                    # Check if there is intersection between the bbs
+                    if (xmax-xmin) > 0 and (ymax-ymin) > 0:
+                        intersection_area = (xmax - xmin + 1) * (ymax - ymin + 1)
+                        bb_ref_area = (bb_ref[2] - bb_ref[0] + 1) * (bb_ref[3] - bb_ref[1] + 1)
+                        bb_compared_area = (bb_compared[2] - bb_compared[0] + 1) * (bb_compared[3] - bb_compared[1] + 1)
+                        IoU = intersection_area / (bb_compared_area + bb_ref_area - intersection_area)
+                        if IoU > 0.90:
+                            there_are_overlapping_boxes = True
+                            xmin = min(bb_compared[0], bb_ref[0])
+                            ymin = min(bb_compared[1], bb_ref[1])
+                            xmax = max(bb_compared[2], bb_ref[2])
+                            ymax = max(bb_compared[3], bb_ref[3])
+                            bounding_boxes[bb_idx] = [xmin, ymin, xmax, ymax]
+                            bounding_boxes = np.delete(bounding_boxes, (bb_compared_idx), axis=0)
+
+                    bb_compared_idx += 1
+                bb_idx += 1
+
+    return bounding_boxes
+
 
 def adjust_points_to_img_size(width, height, bb_3d_points):
     for xyz_point in bb_3d_points:
