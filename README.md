@@ -99,6 +99,7 @@ The HDF5 file is structured in the following groups, where each frame entry is a
     * walkers
 * depth
 * rgb
+* ego_speed
 * timestamps
 
 
@@ -107,7 +108,9 @@ Data            | Description | Type
 bounding boxes  | array [xmin, ymin, xmax, ymax] | int 
 depth           | array [sensor_width * sensor_image] | float
 rgb             | array [sensor_width * sensor_image * 3 channels] | int
+ego_speed       | array [vx, vy, vz in m/s] | float
 timestamps      | UTC milisseconds since the UNIX epoch format | int
+
 
 
 
